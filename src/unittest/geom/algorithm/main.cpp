@@ -27,10 +27,24 @@
   \author Gilberto Ribeiro de Queiroz
  */
 
+// GDE
+#include <gde/geom/algorithm/line_segment_intersection.hpp>
+#include <gde/geom/core/geometric_primitives.hpp>
+
 // STL
 #include <iostream>
 
+void test1()
+{
+  gde::geom::core::line_segment s1 = { {0, 0}, {10, 10} };
+  gde::geom::core::line_segment s2 = { {0, 10}, {10, 0} };
+  
+  std::cout << "s1 intersects s2? " << gde::geom::algorithm::do_intersects(s1, s2) << std::endl;
+}
+
 int main(int argc, char* argv[])
 {
+  test1();
+
   return EXIT_SUCCESS;
 }

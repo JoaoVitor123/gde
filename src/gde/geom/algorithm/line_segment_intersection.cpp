@@ -35,7 +35,58 @@ bool
 gde::geom::algorithm::do_intersects(const gde::geom::core::line_segment& s1,
                                     const gde::geom::core::line_segment& s2)
 {
-  return false;
+  double ax = s1.p2.x - s1.p1.x;
+  double ay = s1.p2.y - s1.p1.y;
+  
+  double bx = s2.p1.x - s2.p2.x;
+  double by = s2.p1.y - s2.p2.y;
+  
+  double den = ay * bx - ax * by;
+  
+  if(den == 0)
+  {
+// they are collinear
+    // do they intersect? we need a special handling
+  }
+
+// they are not collinear, let's see if they intersects
+  double cx = s1.p1.x - s2.p1.x;
+  double cy = s1.p1.y - s2.p1.y;
+  
+// is alpha in the range [0..1]
+  double num_alpha = by * cx - bx * cy;
+
+  if(den > 0)
+  {
+    
+// is alpha before the range [0..1] or after it?
+    if((num_alpha < 0) or (num_alpha > den))
+      return false;
+  }
+  else // den < 0
+  {
+// is alpha before the range [0..1] or after it?
+    if((num_alpha > 0) or (num_alpha < den))
+      return false;
+  }
+
+// is beta in the range [0..1]
+  double num_beta = ay * bx - ax * by;
+  
+  if(den > 0)
+  {
+// is beta before the range [0..1] or after it?
+    if((num_beta < 0) or (num_beta > den))
+      return false;
+  }
+  else // den < 0
+  {
+// is beta before the range [0..1] or after it?
+    if((num_beta > 0) or (num_beta < den))
+      return false;
+  }
+  
+  return true;
 }
 
 gde::geom::algorithm::segment_relation_type

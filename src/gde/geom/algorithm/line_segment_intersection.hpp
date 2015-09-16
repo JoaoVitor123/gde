@@ -54,10 +54,12 @@ namespace gde
         CROSS,    //!< Segments crosses in a single inner point.
         TOUCH,    //!< Segments touches in one of their end-points.
         OVERLAP   //!< Segments overlap: their intersection is another segment.
-      }
+      };
 
       /*!
         \brief Test if both segments intersects.
+       
+        \note Based on the algorithm of Franklin Antonio in Graphics Gems III.
        */
       bool
       do_intersects(const gde::geom::core::line_segment& s1,
@@ -67,6 +69,8 @@ namespace gde
         \brief Compute the intersection point between two line segments, if one exists.
 
         \return The type of intersection between line segments.
+       
+        \note Based on the algorithm of Franklin Antonio in Graphics Gems III.
        */
       segment_relation_type
       compute_intesection(const gde::geom::core::line_segment& s1,
