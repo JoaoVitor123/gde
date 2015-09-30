@@ -54,11 +54,11 @@ void test1()
 void test_lazy_intersection()
 {
   std::vector<gde::geom::core::line_segment> segments = {
-    { {0, 0}, {10, 10} },
-    { {1, 0}, {10, 9} },
-    { {2, 0}, {10, 8} },
-    { {3, 0}, {10, 7} },
-    { {4, 0}, {10, 6} }
+    { {0, 0}, {3, 3} },
+    { {1, 3}, {2, 7} },
+    { {4, 4}, {1, 7} },
+    { {4, 5}, {7, 8} },
+    { {9, 3}, {5, 8} }
   };
   
   std::vector<gde::geom::core::point> intersections = gde::geom::algorithm::lazy_intersection(segments);
@@ -69,7 +69,7 @@ void test_lazy_intersection()
 
 int main(int argc, char* argv[])
 {
-  test1();
+  //test1();
   
   test_lazy_intersection();
 

@@ -47,6 +47,34 @@ gde::geom::algorithm::do_intersects(const gde::geom::core::line_segment& s1,
   {
 // they are collinear
     // do they intersect? we need a special handling
+    if(s1.p2.x < s2.p1.x || s2.p2.x < s1.p1.x)
+        return "D"; // Segments are disjoint
+
+    else if(s1.p2.x > s2.p1.x)
+    {
+        // Segments overlap
+        gde::geom::core::point  p1;
+        gde::geom::core::point  p2;
+        p1.x = s2.p1.x;
+        p1.y = s2.p1.y;
+        p2.x = s1.p2.x;
+        p2.y = s1.p2.y;
+    }
+
+    else if(s1.p1.x < s2.p2.x)
+    {
+        // Segments overlap
+        gde::geom::core::point  p1;
+        gde::geom::core::point  p2;
+        p1.x = s2.p2.x;
+        p1.y = s2.p2.y;
+        p2.x = s1.p1.x;
+        p2.y = s1.p1.y;
+    }
+
+    //else if() s1 dentro de s2
+    //else if() s2 dentro de s1
+    //else if() s2 == s1
   }
 
 // they are not collinear, let's see if they intersects
@@ -95,6 +123,19 @@ gde::geom::algorithm::compute_intesection(const gde::geom::core::line_segment& s
                                           gde::geom::core::point& first,
                                           gde::geom::core::point& second)
 {
+    double ax = s1.p2.x - s1.p1.x;
+    double ay = s1.p2.y - s1.p1.y;
+    double bx = s2.p1.x - s2.p2.x;
+    double by = s2.p1.y - s2.p2.y;
+
+    double den = ay * bx - ax * by;
+    double num_beta = ay * bx - ax * by;
+
+    double beta = den / num_beta;
+
+    first.x = (s1.p1.x + (beta * ax));
+    first.y = (s1.p1.y + (beta * ay));
+
   return DISJOINT;
 }
 

@@ -1,0 +1,4 @@
+*.autosave
+.DS_Store
+*.user
+build/cmake/.idea/
