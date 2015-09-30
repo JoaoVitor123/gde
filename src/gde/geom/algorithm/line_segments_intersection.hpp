@@ -46,10 +46,12 @@ namespace gde
       /*!
         \brief Given a set of segments compute the intersection points between each pair.
 
+        This implementation uses a brute force approach. It's complexity is O(n^2).
+
         \note This is an O(n^2) algorithm.
        */
       std::vector<gde::geom::core::point>
-      lazy_intersection(std::vector<gde::geom::core::line_segment>& segments);
+      lazy_intersection(const std::vector<gde::geom::core::line_segment>& segments);
 
       /*!
         \brief Given two poly-lines, named red and blue, compute the intersection points between their segments.

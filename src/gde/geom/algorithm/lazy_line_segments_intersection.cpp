@@ -32,9 +32,33 @@
 #include "line_segment_intersection.hpp"
 
 std::vector<gde::geom::core::point>
-gde::geom::algorithm::lazy_intersection(std::vector<gde::geom::core::line_segment>& segments)
+gde::geom::algorithm::lazy_intersection(const std::vector<gde::geom::core::line_segment>& segments)
 {
   std::vector<gde::geom::core::point> result;
+  gde::geom::core::point ip1;
+  gde::geom::core::point ip2;
+
+  const std::size_t number_of_segments = segments.size();
+
+  for(std::size_t i = 0; i < (number_of_segments - 1); ++i)
+  {
+    const gde::geom::core::line_segment& red = segments[i];
+
+    for(std::size_t j = i + 1; j != number_of_segments; ++j)
+    {
+      const gde::geom::core::line_segment& blue = segments[j];
+
+      segment_relation_type spatial_relation = compute_intesection(red, blue, ip1, ip2);
+
+      if(spatial_relation == DISJOINT)
+        continue;
+
+      result.push_back(ip1);
+
+      if(spatial_relation == OVERLAP)
+        result.push_back(ip2);
+    }
+  }
 
   return result;
 }
