@@ -50,31 +50,67 @@ gde::geom::algorithm::do_intersects(const gde::geom::core::line_segment& s1,
     if(s1.p2.x < s2.p1.x || s2.p2.x < s1.p1.x)
         return "D"; // Segments are disjoint
 
-    else if(s1.p2.x > s2.p1.x)
+    else if (s1.p2.x == s2.p1.x)
     {
-        // Segments overlap
-        gde::geom::core::point  p1;
-        gde::geom::core::point  p2;
-        p1.x = s2.p1.x;
-        p1.y = s2.p1.y;
-        p2.x = s1.p2.x;
-        p2.y = s1.p2.y;
+      // touch
+
+    }
+
+    else if (s2.p2.x == s1.p1.x)
+    {
+      // touch
+
+    }
+
+    else if( s1.p1.x == s2.p1.x || s1.p2.x == s2.p2.x)
+    {
+      // equal segments, overlap
+      gde::geom::core::point  p1;
+      gde::geom::core::point  p2;
+
+      p1.x = s1.p1.x; p1.y = s1.p1.y;
+      p2.x = s1.p2.x; p2.y = s1.p2.y;
+    }
+
+    else if(s1.p1.x < s2.p1.x || s1.p2.x > s2.p2.x)
+    {
+      // s2 within the s1, overlap
+      gde::geom::core::point  p1;
+      gde::geom::core::point  p2;
+
+      p1.x = s2.p1.x;  p1.y = s2.p1.y;
+      p2.x = s2.p2.x;  p2.y = s2.p2.y;
+    }
+
+    else if(s1.p1.x < s2.p1.x || s1.p2.x > s2.p2.x)
+    {
+      // s2 within the s1, overlap
+      gde::geom::core::point  p1;
+      gde::geom::core::point  p2;
+
+      p1.x = s2.p1.x;  p1.y = s2.p1.y;
+      p2.x = s2.p2.x;  p2.y = s2.p2.y;
+    }
+
+    else if(s2.p1.x < s1.p1.x)
+    {
+      // Segments overlap
+      gde::geom::core::point  p1;
+      gde::geom::core::point  p2;
+
+      p1.x = s1.p1.x;  p1.y = s1.p1.y;
+      p2.x = s2.p2.x;  p2.y = s2.p2.y;
     }
 
     else if(s1.p1.x < s2.p2.x)
     {
-        // Segments overlap
-        gde::geom::core::point  p1;
-        gde::geom::core::point  p2;
-        p1.x = s2.p2.x;
-        p1.y = s2.p2.y;
-        p2.x = s1.p1.x;
-        p2.y = s1.p1.y;
-    }
+      // Segments overlap
+      gde::geom::core::point  p1;
+      gde::geom::core::point  p2;
 
-    //else if() s1 dentro de s2
-    //else if() s2 dentro de s1
-    //else if() s2 == s1
+      p1.x = s2.p1.x;  p1.y = s2.p1.y;
+      p2.x = s1.p2.x;  p2.y = s1.p2.y;
+    }
   }
 
 // they are not collinear, let's see if they intersects
