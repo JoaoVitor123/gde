@@ -55,6 +55,13 @@ namespace gde
         TOUCH,    //!< Segments touches in one of their end-points.
         OVERLAP   //!< Segments overlap: their intersection is another segment.
       };
+      
+      enum point_relation_type
+      {
+        DISJOINT_P,
+        TOUCH_P,
+        WITHIN_P
+      };
 
       /*!
         \brief Test if both segments intersects.
@@ -64,7 +71,20 @@ namespace gde
       bool
       do_intersects(const gde::geom::core::line_segment& s1,
                     const gde::geom::core::line_segment& s2);
-
+      
+      /*!
+        \brief Test if two collinear segments intersects.
+       */
+      bool
+      do_collinear_segments_intersects(const gde::geom::core::line_segment& s1,
+                                       const gde::geom::core::line_segment& s2);
+      
+      /*!
+        \brief Test if the point p collinear to the segment s is inside it or not.
+       */
+      bool is_collinear_point_between(const gde::geom::core::point& p,
+                                      const gde::geom::core::line_segment& s);
+      
       /*!
         \brief Compute the intersection point between two line segments, if one exists.
 
