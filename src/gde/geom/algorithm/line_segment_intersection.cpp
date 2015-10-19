@@ -30,6 +30,7 @@
 // GDE
 #include "line_segment_intersection.hpp"
 #include "../core/geometric_primitives.hpp"
+#include "utils.hpp"
 
 // STL
 #include <algorithm>
@@ -129,19 +130,6 @@ gde::geom::algorithm::do_collinear_segments_intersects(const gde::geom::core::li
     return true;
 
   return false;
-}
-
-bool
-gde::geom::algorithm::is_collinear_point_between(const gde::geom::core::point& p,
-                                                 const gde::geom::core::line_segment& s)
-{
-  if((p.x < s.p1.x) && (p.x < s.p2.x)) // is p to the left of s?
-    return false;
-  
-  if((p.x > s.p1.x) && (p.x > s.p2.x)) // is p to the right of s?
-    return false;
-  
-  return true;
 }
 
 gde::geom::algorithm::segment_relation_type
