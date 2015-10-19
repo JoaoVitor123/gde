@@ -117,16 +117,16 @@ bool
 gde::geom::algorithm::do_collinear_segments_intersects(const gde::geom::core::line_segment& s1,
                                                        const gde::geom::core::line_segment& s2)
 {
-  if(is_collinear_point_between(s1.p1, s2))
+  if(is_collinear_point_on_segment(s1.p1, s2))
      return true;
      
-  if(is_collinear_point_between(s1.p2, s2))
+  if(is_collinear_point_on_segment(s1.p2, s2))
     return true;
      
-  if(is_collinear_point_between(s2.p1, s1))
+  if(is_collinear_point_on_segment(s2.p1, s1))
     return true;
         
-  if(is_collinear_point_between(s2.p2, s1))
+  if(is_collinear_point_on_segment(s2.p2, s1))
     return true;
 
   return false;
