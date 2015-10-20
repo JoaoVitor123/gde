@@ -48,7 +48,7 @@ gde::geom::algorithm::lazy_intersection(const std::vector<gde::geom::core::line_
     {
       const gde::geom::core::line_segment& blue = segments[j];
 
-      segment_relation_type spatial_relation = compute_intesection(red, blue, ip1, ip2);
+      segment_relation_type spatial_relation = compute_intesection_v1(red, blue, ip1, ip2);
 
       if(spatial_relation == DISJOINT)
         continue;

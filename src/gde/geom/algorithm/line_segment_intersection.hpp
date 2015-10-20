@@ -30,6 +30,9 @@
 #ifndef __GDE_GEOM_ALGORITHM_LINE_SEGMENT_INTERSECTION_HPP__
 #define __GDE_GEOM_ALGORITHM_LINE_SEGMENT_INTERSECTION_HPP__
 
+// GDE
+#include "utils.hpp"
+
 namespace gde
 {
   namespace geom
@@ -56,22 +59,52 @@ namespace gde
         OVERLAP   //!< Segments overlap: their intersection is another segment.
       };
       
+      /*! \brief Test if two collinear segments intersects. */
+      inline bool
+      do_collinear_segments_intersects(const gde::geom::core::line_segment& s1,
+                                       const gde::geom::core::line_segment& s2)
+      {
+        if(is_collinear_point_on_segment(s1.p1, s2))
+          return true;
+        
+        if(is_collinear_point_on_segment(s1.p2, s2))
+          return true;
+        
+        if(is_collinear_point_on_segment(s2.p1, s1))
+          return true;
+        
+        if(is_collinear_point_on_segment(s2.p2, s1))
+          return true;
+        
+        return false;
+      }
+      
       /*!
         \brief Test if both segments intersects.
        
-        \note Based on the algorithm of Franklin Antonio in Graphics Gems III.
+        \note Based on the algorithm of Mukesh Prasad (1991) in Graphics Gems II, page 7.
        */
       bool
-      do_intersects(const gde::geom::core::line_segment& s1,
-                    const gde::geom::core::line_segment& s2);
+      do_intersects_v1(const gde::geom::core::line_segment& s1,
+                       const gde::geom::core::line_segment& s2);
       
       /*!
-        \brief Test if two collinear segments intersects.
+        \brief Test if both segments intersects.
+       
+        \note Based on the algorithm of Shaffer and Feustel (1992) in Graphics Gems III.
        */
       bool
-      do_collinear_segments_intersects(const gde::geom::core::line_segment& s1,
-                                       const gde::geom::core::line_segment& s2);
+      do_intersects_v2(const gde::geom::core::line_segment& s1,
+                       const gde::geom::core::line_segment& s2);
       
+      /*!
+        \brief Test if both segments intersects.
+       
+        \note Based on the algorithm of Franklin Antonio (1992) in Graphics Gems III.
+       */
+      bool
+      do_intersects_v3(const gde::geom::core::line_segment& s1,
+                       const gde::geom::core::line_segment& s2);
       
       
       /*!
@@ -79,13 +112,40 @@ namespace gde
 
         \return The type of intersection between line segments.
        
-        \note Based on the algorithm of Franklin Antonio in Graphics Gems III.
+        \note Based on the algorithm of Franklin Antonio (1992) in Graphics Gems III.
        */
       segment_relation_type
-      compute_intesection(const gde::geom::core::line_segment& s1,
-                          const gde::geom::core::line_segment& s2,
-                          gde::geom::core::point& first,
-                          gde::geom::core::point& second);
+      compute_intesection_v1(const gde::geom::core::line_segment& s1,
+                             const gde::geom::core::line_segment& s2,
+                             gde::geom::core::point& first,
+                             gde::geom::core::point& second);
+      
+      /*!
+       \brief Compute the intersection point between two line segments, if one exists.
+       
+       \return The type of intersection between line segments.
+       
+       \note Based on the algorithm of Franklin Antonio (1992) in Graphics Gems III.
+       */
+      segment_relation_type
+      compute_intesection_v1(const gde::geom::core::line_segment& s1,
+                             const gde::geom::core::line_segment& s2,
+                             gde::geom::core::point& first,
+                             gde::geom::core::point& second);
+      
+      
+      /*!
+        \brief Compute the intersection point between two line segments, if one exists.
+       
+        \return The type of intersection between line segments.
+       
+        \note Based on the algorithm of Mukesh Prasad in Graphics Gems II, page 7.
+       */
+      segment_relation_type
+      compute_intesection_v2(const gde::geom::core::line_segment& s1,
+                             const gde::geom::core::line_segment& s2,
+                             gde::geom::core::point& first,
+                             gde::geom::core::point& second);
 
     } // end namespace algorithm
   }   // end namespace geom
