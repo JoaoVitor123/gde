@@ -60,7 +60,34 @@ bool
 gde::geom::algorithm::do_intersects_v1(const gde::geom::core::line_segment& s1,
                                        const gde::geom::core::line_segment& s2)
 {
-  return false;
+// compute general line equation for segment s1
+  double a1 = s1.p2.y - s1.p1.y;
+  double b1 = s1.p1.x - s1.p2.x;
+  double c1 = (s1.p2.x * s1.p1.y) - (s1.p1.x * s1.p2.y);
+  
+  double r3 = a1 * s2.p1.x + b1 * s2.p1.y + c1;
+  double r4 = a1 * s2.p2.x + b1 * s2.p2.y + c1;
+  
+// if both points from segment s2 are to the sime side,
+// we are sure s2 can not intersects s1
+  if((r3 > 0.0 && r4 > 0.0) || (r3 < 0.0 && r4 < 0.0))
+    return false;
+
+// compute general line equation for segment s2
+  double a2 = s2.p2.y - s2.p1.y;
+  double b2 = s2.p1.x - s2.p2.x;
+  double c2 = (s2.p2.x * s2.p1.y) - (s2.p1.x * s2.p2.y);
+  
+  double r1 = a2 * s1.p1.x + b2 * s1.p1.y + c2;
+  double r2 = a2 * s1.p2.x + b2 * s1.p2.y + c2;
+
+// if both points from segment s1 are to the sime side,
+// we are sure s1 can not intersects s2
+  if((r1 > 0.0 && r2 > 0.0) || (r1 < 0.0 && r2 < 0.0))
+    return false;
+  
+// ok: we know all the segments may overlap or cross at a single point!
+  return true;
 }
 
 bool
