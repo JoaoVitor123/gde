@@ -48,7 +48,7 @@ void test1()
   gde::geom::core::line_segment s1 = { {0, 0}, {10, 10} };
   gde::geom::core::line_segment s2 = { {0, 10}, {10, 0} };
   
-  std::cout << "s1 intersects s2? " << gde::geom::algorithm::do_intersects(s1, s2) << std::endl;
+  std::cout << "s1 intersects s2? " << gde::geom::algorithm::do_intersects_v1(s1, s2) << std::endl;
 }
 
 void test_lazy_intersection()

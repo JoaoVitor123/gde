@@ -29,7 +29,6 @@
 
 // GDE
 #include "line_segment_intersection.hpp"
-#include "../core/geometric_primitives.hpp"
 
 // STL
 #include <algorithm>
@@ -58,8 +57,49 @@ namespace gde
 }
 
 bool
-gde::geom::algorithm::do_intersects(const gde::geom::core::line_segment& s1,
-                                    const gde::geom::core::line_segment& s2)
+gde::geom::algorithm::do_intersects_v1(const gde::geom::core::line_segment& s1,
+                                       const gde::geom::core::line_segment& s2)
+{
+// compute general line equation for segment s1
+  double a1 = s1.p2.y - s1.p1.y;
+  double b1 = s1.p1.x - s1.p2.x;
+  double c1 = (s1.p2.x * s1.p1.y) - (s1.p1.x * s1.p2.y);
+  
+  double r3 = a1 * s2.p1.x + b1 * s2.p1.y + c1;
+  double r4 = a1 * s2.p2.x + b1 * s2.p2.y + c1;
+  
+// if both points from segment s2 are to the sime side,
+// we are sure s2 can not intersects s1
+  if((r3 > 0.0 && r4 > 0.0) || (r3 < 0.0 && r4 < 0.0))
+    return false;
+
+// compute general line equation for segment s2
+  double a2 = s2.p2.y - s2.p1.y;
+  double b2 = s2.p1.x - s2.p2.x;
+  double c2 = (s2.p2.x * s2.p1.y) - (s2.p1.x * s2.p2.y);
+  
+  double r1 = a2 * s1.p1.x + b2 * s1.p1.y + c2;
+  double r2 = a2 * s1.p2.x + b2 * s1.p2.y + c2;
+
+// if both points from segment s1 are to the sime side,
+// we are sure s1 can not intersects s2
+  if((r1 > 0.0 && r2 > 0.0) || (r1 < 0.0 && r2 < 0.0))
+    return false;
+  
+// ok: we know all the segments may overlap or cross at a single point!
+  return true;
+}
+
+bool
+gde::geom::algorithm::do_intersects_v2(const gde::geom::core::line_segment& s1,
+                                       const gde::geom::core::line_segment& s2)
+{
+  return false;
+}
+
+bool
+gde::geom::algorithm::do_intersects_v3(const gde::geom::core::line_segment& s1,
+                                       const gde::geom::core::line_segment& s2)
 {
   double ax = s1.p2.x - s1.p1.x;
   double ay = s1.p2.y - s1.p1.y;
@@ -114,43 +154,29 @@ gde::geom::algorithm::do_intersects(const gde::geom::core::line_segment& s1,
   return true;
 }
 
-bool
-gde::geom::algorithm::do_collinear_segments_intersects(const gde::geom::core::line_segment& s1,
-                                                       const gde::geom::core::line_segment& s2)
+gde::geom::algorithm::segment_relation_type
+gde::geom::algorithm::compute_intesection_v1(const gde::geom::core::line_segment& s1,
+                                             const gde::geom::core::line_segment& s2,
+                                             gde::geom::core::point& first,
+                                             gde::geom::core::point& second)
 {
-  if(is_collinear_point_between(s1.p1, s2))
-     return true;
-     
-  if(is_collinear_point_between(s1.p2, s2))
-    return true;
-     
-  if(is_collinear_point_between(s2.p1, s1))
-    return true;
-        
-  if(is_collinear_point_between(s2.p2, s1))
-    return true;
-
-  return false;
-}
-
-bool
-gde::geom::algorithm::is_collinear_point_between(const gde::geom::core::point& p,
-                                                 const gde::geom::core::line_segment& s)
-{
-  if((p.x < s.p1.x) && (p.x < s.p2.x)) // is p to the left of s?
-    return false;
-  
-  if((p.x > s.p1.x) && (p.x > s.p2.x)) // is p to the right of s?
-    return false;
-  
-  return true;
+  return DISJOINT;
 }
 
 gde::geom::algorithm::segment_relation_type
-gde::geom::algorithm::compute_intesection(const gde::geom::core::line_segment& s1,
-                                          const gde::geom::core::line_segment& s2,
-                                          gde::geom::core::point& first,
-                                          gde::geom::core::point& second)
+gde::geom::algorithm::compute_intesection_v2(const gde::geom::core::line_segment& s1,
+                                             const gde::geom::core::line_segment& s2,
+                                             gde::geom::core::point& first,
+                                             gde::geom::core::point& second)
+{
+  return DISJOINT;
+}
+
+gde::geom::algorithm::segment_relation_type
+gde::geom::algorithm::compute_intesection_v3(const gde::geom::core::line_segment& s1,
+                                             const gde::geom::core::line_segment& s2,
+                                             gde::geom::core::point& first,
+                                             gde::geom::core::point& second)
 {
   double ax = s1.p2.x - s1.p1.x;
   double ay = s1.p2.y - s1.p1.y;
@@ -232,4 +258,5 @@ gde::geom::algorithm::compute_intesection(const gde::geom::core::line_segment& s
 
   return CROSS;
 }
+
 
