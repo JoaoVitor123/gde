@@ -78,25 +78,25 @@ namespace gde
         
         return false;
       }
-      
+
       /*!
         \brief Test if both segments intersects.
-       
+
         \note Based on the algorithm of Mukesh Prasad (1991) in Graphics Gems II, page 7.
        */
       bool
       do_intersects_v1(const gde::geom::core::line_segment& s1,
                        const gde::geom::core::line_segment& s2);
-      
+
       /*!
         \brief Test if both segments intersects.
-       
+
         \note Based on the algorithm of Shaffer and Feustel (1992) in Graphics Gems III.
        */
       bool
       do_intersects_v2(const gde::geom::core::line_segment& s1,
                        const gde::geom::core::line_segment& s2);
-      
+
       /*!
         \brief Test if both segments intersects.
        
@@ -105,14 +105,13 @@ namespace gde
       bool
       do_intersects_v3(const gde::geom::core::line_segment& s1,
                        const gde::geom::core::line_segment& s2);
-      
-      
+
       /*!
         \brief Compute the intersection point between two line segments, if one exists.
 
         \return The type of intersection between line segments.
-       
-        \note Based on the algorithm of Franklin Antonio (1992) in Graphics Gems III.
+
+        \note Based on the algorithm of Mukesh Prasad in Graphics Gems II, page 7.
        */
       segment_relation_type
       compute_intesection_v1(const gde::geom::core::line_segment& s1,
@@ -125,10 +124,10 @@ namespace gde
        
        \return The type of intersection between line segments.
        
-       \note Based on the algorithm of Franklin Antonio (1992) in Graphics Gems III.
+       \note Based on the algorithm of ...
        */
       segment_relation_type
-      compute_intesection_v1(const gde::geom::core::line_segment& s1,
+      compute_intesection_v2(const gde::geom::core::line_segment& s1,
                              const gde::geom::core::line_segment& s2,
                              gde::geom::core::point& first,
                              gde::geom::core::point& second);
@@ -138,11 +137,11 @@ namespace gde
         \brief Compute the intersection point between two line segments, if one exists.
        
         \return The type of intersection between line segments.
-       
-        \note Based on the algorithm of Mukesh Prasad in Graphics Gems II, page 7.
+
+        \note Based on the algorithm of Franklin Antonio (1992) in Graphics Gems III.
        */
       segment_relation_type
-      compute_intesection_v2(const gde::geom::core::line_segment& s1,
+      compute_intesection_v3(const gde::geom::core::line_segment& s1,
                              const gde::geom::core::line_segment& s2,
                              gde::geom::core::point& first,
                              gde::geom::core::point& second);

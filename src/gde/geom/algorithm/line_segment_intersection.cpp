@@ -60,6 +60,20 @@ bool
 gde::geom::algorithm::do_intersects_v1(const gde::geom::core::line_segment& s1,
                                        const gde::geom::core::line_segment& s2)
 {
+  return false;
+}
+
+bool
+gde::geom::algorithm::do_intersects_v2(const gde::geom::core::line_segment& s1,
+                                       const gde::geom::core::line_segment& s2)
+{
+  return false;
+}
+
+bool
+gde::geom::algorithm::do_intersects_v3(const gde::geom::core::line_segment& s1,
+                                       const gde::geom::core::line_segment& s2)
+{
   double ax = s1.p2.x - s1.p1.x;
   double ay = s1.p2.y - s1.p1.y;
   
@@ -111,15 +125,26 @@ gde::geom::algorithm::do_intersects_v1(const gde::geom::core::line_segment& s1,
   return true;
 }
 
-bool
-gde::geom::algorithm::do_intersects_v2(const gde::geom::core::line_segment& s1,
-                                       const gde::geom::core::line_segment& s2)
+gde::geom::algorithm::segment_relation_type
+gde::geom::algorithm::compute_intesection_v1(const gde::geom::core::line_segment& s1,
+                                             const gde::geom::core::line_segment& s2,
+                                             gde::geom::core::point& first,
+                                             gde::geom::core::point& second)
 {
-  return false;
+  return DISJOINT;
 }
 
 gde::geom::algorithm::segment_relation_type
-gde::geom::algorithm::compute_intesection_v1(const gde::geom::core::line_segment& s1,
+gde::geom::algorithm::compute_intesection_v2(const gde::geom::core::line_segment& s1,
+                                             const gde::geom::core::line_segment& s2,
+                                             gde::geom::core::point& first,
+                                             gde::geom::core::point& second)
+{
+  return DISJOINT;
+}
+
+gde::geom::algorithm::segment_relation_type
+gde::geom::algorithm::compute_intesection_v3(const gde::geom::core::line_segment& s1,
                                              const gde::geom::core::line_segment& s2,
                                              gde::geom::core::point& first,
                                              gde::geom::core::point& second)
@@ -205,11 +230,4 @@ gde::geom::algorithm::compute_intesection_v1(const gde::geom::core::line_segment
   return CROSS;
 }
 
-gde::geom::algorithm::segment_relation_type
-gde::geom::algorithm::compute_intesection_v2(const gde::geom::core::line_segment& s1,
-                                             const gde::geom::core::line_segment& s2,
-                                             gde::geom::core::point& first,
-                                             gde::geom::core::point& second)
-{
-  return DISJOINT;
-}
+
