@@ -110,14 +110,14 @@ gde::geom::algorithm::do_intersects_v2(const gde::geom::core::line_segment& s1,
                                        const gde::geom::core::line_segment& s2)
 {
 // verifying the biggest point between s1.p1.x and s1.p2.x
-  auto  max1 = minmax({s1.p1.x, s1.p2.x});
-  auto  max2 = minmax({s2.p1.x, s2.p2.x});
+  auto  max1 = std::minmax({s1.p1.x, s1.p2.x});
+  auto  max2 = std::minmax({s2.p1.x, s2.p2.x});
   if((max1.first < max2.second) || (max1.second > max2.first))
     return false;
 
 // verifying the biggest point between s2.p1.y and s2.p2.y
-  auto  max3 = minmax({s1.p1.y, s2.p1.y});
-  auto  max4 = minmax({s2.p1.y, s2.p2.y});
+  auto  max3 = std::minmax({s1.p1.y, s2.p1.y});
+  auto  max4 = std::minmax({s2.p1.y, s2.p2.y});
   if((max3.first < max4.second) || (max3.second > max4.first))
     return false;
 
@@ -229,7 +229,7 @@ gde::geom::algorithm::compute_intesection_v2(const gde::geom::core::line_segment
                                              gde::geom::core::point& first,
                                              gde::geom::core::point& second)
 {
-  double
+
   return DISJOINT;
 }
 
