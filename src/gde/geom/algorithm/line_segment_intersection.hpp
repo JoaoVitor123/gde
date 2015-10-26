@@ -80,6 +80,15 @@ namespace gde
       }
 
       /*!
+        \brief Test if both point r* and point r* lie on same side of line 1
+
+        \note Based on the algorithm of Mukesh Prasad (1991) in Graphics Gems II, page 7.
+       */
+      bool
+      same_signs(const double r1,
+                 const double r2);
+
+      /*!
         \brief Test if both segments intersects.
 
         \note Based on the algorithm of Mukesh Prasad (1991) in Graphics Gems II, page 7.

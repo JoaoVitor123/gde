@@ -57,6 +57,13 @@ namespace gde
 }
 
 bool
+gde::geom::algorithm::same_signs(const double r1,
+                                 const double r2)
+{
+    return (((long) ((unsigned long) r1 ^ (unsigned long) r2)) >= 0);
+}
+
+bool
 gde::geom::algorithm::do_intersects_v1(const gde::geom::core::line_segment& s1,
                                        const gde::geom::core::line_segment& s2)
 {
@@ -67,7 +74,11 @@ gde::geom::algorithm::do_intersects_v1(const gde::geom::core::line_segment& s1,
   
   double r3 = a1 * s2.p1.x + b1 * s2.p1.y + c1;
   double r4 = a1 * s2.p2.x + b1 * s2.p2.y + c1;
-  
+
+// check signs of r3 and r4. if point 3 and 4 same side of line 1, the line segments do not intersect
+  if(r3 != 0 && r4 != 0 && same_signs(r3, r4))
+      return false;
+
 // if both points from segment s2 are to the sime side,
 // we are sure s2 can not intersects s1
   if((r3 > 0.0 && r4 > 0.0) || (r3 < 0.0 && r4 < 0.0))
@@ -80,6 +91,10 @@ gde::geom::algorithm::do_intersects_v1(const gde::geom::core::line_segment& s1,
   
   double r1 = a2 * s1.p1.x + b2 * s1.p1.y + c2;
   double r2 = a2 * s1.p2.x + b2 * s1.p2.y + c2;
+
+// check signs of r3 and r4. if point 1 and 2 same side of line 2, the line segments do not intersect
+  if(r1 != 0 && r2 != 0 && same_signs(r1, r2))
+      return false;
 
 // if both points from segment s1 are to the sime side,
 // we are sure s1 can not intersects s2
@@ -94,7 +109,37 @@ bool
 gde::geom::algorithm::do_intersects_v2(const gde::geom::core::line_segment& s1,
                                        const gde::geom::core::line_segment& s2)
 {
-  return false;
+// verifying the biggest point between s1.p1.x and s1.p2.x
+  auto  max1 = std::minmax({s1.p1.x, s1.p2.x});
+  auto  max2 = std::minmax({s2.p1.x, s2.p2.x});
+  if((max1.first < max2.second) || (max1.second > max2.first))
+    return false;
+
+// verifying the biggest point between s2.p1.y and s2.p2.y
+  auto  max3 = std::minmax({s1.p1.y, s2.p1.y});
+  auto  max4 = std::minmax({s2.p1.y, s2.p2.y});
+  if((max3.first < max4.second) || (max3.second > max4.first))
+    return false;
+
+// if the endpoints of the second segment lie on the opposite
+  double a = (s2.p1.x - s1.p1.x) * (s1.p2.y - s1.p1.y) - (s2.p1.y - s1.p1.y) * (s1.p2.x - s1.p1.x);
+  double b = (s2.p2.x - s1.p1.x) * (s1.p2.y - s1.p1.y) - (s2.p2.y - s1.p1.y) * (s1.p2.x - s1.p1.x);
+  if(a != 0 && b != 0 && same_signs(a, b))
+    return false;
+
+// if the endpoints of the first segment lie on the opposite
+  double c = (s1.p1.x - s2.p1.x) * (s2.p2.y - s2.p1.y) - (s1.p1.y - s2.p1.y) * (s2.p2.x - s2.p1.x);
+  double d = (s1.p2.x - s2.p1.x) * (s2.p2.y - s2.p1.y) - (s1.p2.y - s2.p1.y) * (s2.p2.x - s2.p1.x);
+  if(c != 0 && d != 0 && same_signs(c, d))
+    return false;
+
+ // the segments are colinear?
+  double det = a - b;
+  if(det == 0)
+    return do_collinear_segments_intersects(s1, s2);;
+
+//  the segments intersect
+  return true;
 }
 
 bool
@@ -109,8 +154,10 @@ gde::geom::algorithm::do_intersects_v3(const gde::geom::core::line_segment& s1,
   
   double den = ay * bx - ax * by;
   
+
   if(den == 0.0) // are they collinear?
     return do_collinear_segments_intersects(s1, s2);
+
 
 // they are not collinear, let's see if they intersects
   double cx = s1.p1.x - s2.p1.x;
@@ -158,7 +205,37 @@ gde::geom::algorithm::compute_intesection_v1(const gde::geom::core::line_segment
                                              gde::geom::core::point& first,
                                              gde::geom::core::point& second)
 {
-  return DISJOINT;
+// compute general line equation for segment s1
+  double a1 = s1.p2.y - s1.p1.y;
+  double b1 = s1.p1.x - s1.p2.x;
+  double c1 = (s1.p2.x * s1.p1.y) - (s1.p1.x * s1.p2.y);
+
+// compute general line equation for segment s2
+  double a2 = s2.p2.y - s2.p1.y;
+  double b2 = s2.p1.x - s2.p2.x;
+  double c2 = (s2.p2.x * s2.p1.y) - (s2.p1.x * s2.p2.y);
+
+// setting the denominator
+  double denom = a1 * b2 - a2 * c1;
+
+// they are not collinear
+  if(denom == 0)
+  {
+      if(do_collinear_segments_intersects(s1, s2) == false)
+          return DISJOINT;
+  }
+
+  double offset = denom < 0 ? - denom / 2 : denom / 2;
+
+// setting the numerator
+// compute intersection point
+  double num_alpha = b1 * c2 - b2 * c1;
+  first.x = (num_alpha < 0 ? num_alpha - offset : num_alpha + offset) / denom;
+
+  double num_beta = a2 * c1 - a1 * c2;
+  first.y = (num_beta < 0 ? num_beta - offset : num_beta + offset) / denom;
+
+  return CROSS;
 }
 
 gde::geom::algorithm::segment_relation_type
@@ -167,6 +244,7 @@ gde::geom::algorithm::compute_intesection_v2(const gde::geom::core::line_segment
                                              gde::geom::core::point& first,
                                              gde::geom::core::point& second)
 {
+
   return DISJOINT;
 }
 
