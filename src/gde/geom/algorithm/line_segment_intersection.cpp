@@ -121,10 +121,25 @@ gde::geom::algorithm::do_intersects_v2(const gde::geom::core::line_segment& s1,
   if((max3.first < max4.second) || (max3.second > max4.first))
     return false;
 
+// if the endpoints of the second segment lie on the opposite
   double a = (s2.p1.x - s1.p1.x) * (s1.p2.y - s1.p1.y) - (s2.p1.y - s1.p1.y) * (s1.p2.x - s1.p1.x);
   double b = (s2.p2.x - s1.p1.x) * (s1.p2.y - s1.p1.y) - (s2.p2.y - s1.p1.y) * (s1.p2.x - s1.p1.x);
+  if(a != 0 && b != 0 && same_signs(a, b))
+    return false;
 
-  return false;
+// if the endpoints of the first segment lie on the opposite
+  double c = (s1.p1.x - s2.p1.x) * (s2.p2.y - s2.p1.y) - (s1.p1.y - s2.p1.y) * (s2.p2.x - s2.p1.x);
+  double d = (s1.p2.x - s2.p1.x) * (s2.p2.y - s2.p1.y) - (s1.p2.y - s2.p1.y) * (s2.p2.x - s2.p1.x);
+  if(c != 0 && d != 0 && same_signs(c, d))
+    return false;
+
+ // the segments are colinear?
+  double det = a - b;
+  if(det == 0)
+    return do_collinear_segments_intersects(s1, s2);;
+
+//  the segments intersect
+  return true;
 }
 
 bool
