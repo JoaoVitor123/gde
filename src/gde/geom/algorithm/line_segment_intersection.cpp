@@ -57,13 +57,6 @@ namespace gde
 }
 
 bool
-gde::geom::algorithm::same_signs(const double r1,
-                                 const double r2)
-{
-    return (((long) ((unsigned long) r1 ^ (unsigned long) r2)) >= 0);
-}
-
-bool
 gde::geom::algorithm::do_intersects_v1(const gde::geom::core::line_segment& s1,
                                        const gde::geom::core::line_segment& s2)
 {
@@ -75,13 +68,9 @@ gde::geom::algorithm::do_intersects_v1(const gde::geom::core::line_segment& s1,
   double r3 = a1 * s2.p1.x + b1 * s2.p1.y + c1;
   double r4 = a1 * s2.p2.x + b1 * s2.p2.y + c1;
 
-// check signs of r3 and r4. if point 3 and 4 same side of line 1, the line segments do not intersect
-  if(r3 != 0 && r4 != 0 && same_signs(r3, r4))
-      return false;
-
-// if both points from segment s2 are to the sime side,
+// if both points from segment s2 are to the sime side of line defined by segment s1,
 // we are sure s2 can not intersects s1
-  if((r3 > 0.0 && r4 > 0.0) || (r3 < 0.0 && r4 < 0.0))
+  if(r3 != 0.0 && r4 != 0.0 && same_signs(r3, r4))
     return false;
 
 // compute general line equation for segment s2
@@ -92,16 +81,35 @@ gde::geom::algorithm::do_intersects_v1(const gde::geom::core::line_segment& s1,
   double r1 = a2 * s1.p1.x + b2 * s1.p1.y + c2;
   double r2 = a2 * s1.p2.x + b2 * s1.p2.y + c2;
 
-// check signs of r3 and r4. if point 1 and 2 same side of line 2, the line segments do not intersect
-  if(r1 != 0 && r2 != 0 && same_signs(r1, r2))
-      return false;
-
-// if both points from segment s1 are to the sime side,
+// if both points from segment s1 are to the sime side of line defined by segment s2,
 // we are sure s1 can not intersects s2
-  if((r1 > 0.0 && r2 > 0.0) || (r1 < 0.0 && r2 < 0.0))
+  if(r1 != 0.0 && r2 != 0.0 && same_signs(r1, r2))
+    return false;
+
+// check if bounding box intersects
+  std::pair<double, double> minmax_x_s1 = std::minmax(s1.p1.x, s1.p2.x);
+  std::pair<double, double> minmax_x_s2 = std::minmax(s2.p1.x, s2.p2.x);
+  
+// is s1 to the right of s2?
+  if(minmax_x_s1.first > minmax_x_s2.second)
+    return false;
+
+// is s1 to the left of s2?
+  if(minmax_x_s1.second < minmax_x_s2.first)
     return false;
   
-// ok: we know all the segments may overlap or cross at a single point!
+  std::pair<double, double> minmax_y_s1 = std::minmax(s1.p1.y, s1.p2.y);
+  std::pair<double, double> minmax_y_s2 = std::minmax(s2.p1.y, s2.p2.y);
+  
+// is s1 above s2?
+  if(minmax_y_s1.first > minmax_y_s2.second)
+    return false;
+  
+// is s1 below s2?
+  if(minmax_y_s1.second < minmax_y_s2.first)
+    return false;
+  
+// ok: we know tha segments may overlap or cross at a single point!
   return true;
 }
 

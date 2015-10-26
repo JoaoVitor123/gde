@@ -39,6 +39,12 @@ namespace gde
   {
     namespace algorithm
     {
+      /*! \brief Test if values v1 and v2 have the same sign. */
+      inline bool same_signs(double v1, double v2)
+      {
+        return ((v1 > 0.0 && v2 > 0.0) || (v1 < 0.0 && v2 < 0.0)) ? true : false;
+      }
+
       /*!
         \brief Test if the point p collinear to the end-points of segment s is inside it or not.
 
