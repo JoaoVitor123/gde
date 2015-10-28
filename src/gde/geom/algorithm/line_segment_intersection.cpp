@@ -86,29 +86,6 @@ gde::geom::algorithm::do_intersects_v1(const gde::geom::core::line_segment& s1,
   if(r1 != 0.0 && r2 != 0.0 && same_signs(r1, r2))
     return false;
 
-// check if bounding box intersects
-  std::pair<double, double> minmax_x_s1 = std::minmax(s1.p1.x, s1.p2.x);
-  std::pair<double, double> minmax_x_s2 = std::minmax(s2.p1.x, s2.p2.x);
-  
-// is s1 to the right of s2?
-  if(minmax_x_s1.first > minmax_x_s2.second)
-    return false;
-
-// is s1 to the left of s2?
-  if(minmax_x_s1.second < minmax_x_s2.first)
-    return false;
-  
-  std::pair<double, double> minmax_y_s1 = std::minmax(s1.p1.y, s1.p2.y);
-  std::pair<double, double> minmax_y_s2 = std::minmax(s2.p1.y, s2.p2.y);
-  
-// is s1 above s2?
-  if(minmax_y_s1.first > minmax_y_s2.second)
-    return false;
-  
-// is s1 below s2?
-  if(minmax_y_s1.second < minmax_y_s2.first)
-    return false;
-  
 // ok: we know tha segments may overlap or cross at a single point!
   return true;
 }
@@ -117,31 +94,22 @@ bool
 gde::geom::algorithm::do_intersects_v2(const gde::geom::core::line_segment& s1,
                                        const gde::geom::core::line_segment& s2)
 {
-// verifying the biggest point between s1.p1.x and s1.p2.x
-  auto  max1 = std::minmax({s1.p1.x, s1.p2.x});
-  auto  max2 = std::minmax({s2.p1.x, s2.p2.x});
-  if((max1.first < max2.second) || (max1.second > max2.first))
-    return false;
-
-// verifying the biggest point between s2.p1.y and s2.p2.y
-  auto  max3 = std::minmax({s1.p1.y, s2.p1.y});
-  auto  max4 = std::minmax({s2.p1.y, s2.p2.y});
-  if((max3.first < max4.second) || (max3.second > max4.first))
-    return false;
-
-// if the endpoints of the second segment lie on the opposite
   double a = (s2.p1.x - s1.p1.x) * (s1.p2.y - s1.p1.y) - (s2.p1.y - s1.p1.y) * (s1.p2.x - s1.p1.x);
   double b = (s2.p2.x - s1.p1.x) * (s1.p2.y - s1.p1.y) - (s2.p2.y - s1.p1.y) * (s1.p2.x - s1.p1.x);
+
+// if the endpoints of the second segment lie on the opposite
   if(a != 0 && b != 0 && same_signs(a, b))
     return false;
 
-// if the endpoints of the first segment lie on the opposite
+
   double c = (s1.p1.x - s2.p1.x) * (s2.p2.y - s2.p1.y) - (s1.p1.y - s2.p1.y) * (s2.p2.x - s2.p1.x);
   double d = (s1.p2.x - s2.p1.x) * (s2.p2.y - s2.p1.y) - (s1.p2.y - s2.p1.y) * (s2.p2.x - s2.p1.x);
+
+// if the endpoints of the first segment lie on the opposite
   if(c != 0 && d != 0 && same_signs(c, d))
     return false;
 
- // the segments are colinear?
+// are the segments collinear?
   double det = a - b;
   if(det == 0)
     return do_collinear_segments_intersects(s1, s2);;
