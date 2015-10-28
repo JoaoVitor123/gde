@@ -60,9 +60,9 @@ namespace gde
           return false;
 
 // s1 is to above or below of s2?
-        auto  max3 = std::minmax(s1.p1.y, s2.p1.y);
-        auto  max4 = std::minmax(s2.p1.y, s2.p2.y);
-        if((max3.first > max4.second) || (max3.second < max4.first))
+        auto  minmax3 = std::minmax(s1.p1.y, s2.p1.y);
+        auto  minmax4 = std::minmax(s2.p1.y, s2.p2.y);
+        if((minmax3.first > minmax4.second) || (minmax3.second < minmax4.first))
           return false;
 
         return true;
