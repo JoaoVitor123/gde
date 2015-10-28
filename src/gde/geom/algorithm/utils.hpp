@@ -33,6 +33,9 @@
 // GDE
 #include "../core/geometric_primitives.hpp"
 
+// STL
+#include <algorithm>
+
 namespace gde
 {
   namespace geom
@@ -43,6 +46,26 @@ namespace gde
       inline bool same_signs(double v1, double v2)
       {
         return ((v1 > 0.0 && v2 > 0.0) || (v1 < 0.0 && v2 < 0.0)) ? true : false;
+      }
+
+      /*! \brief check if bounding box intersects. */
+      inline bool
+      is_bounding_box_intersects(const gde::geom::core::line_segment& s1,
+                                 const gde::geom::core::line_segment& s2)
+      {
+// s1 is to right or left of s2?
+        auto  minmax1 = std::minmax(s1.p1.x, s1.p2.x);
+        auto  minmax2 = std::minmax(s2.p1.x, s2.p2.x);
+        if((minmax1.first > minmax2.second) || (minmax1.second < minmax2.first))
+          return false;
+
+// s1 is to above or below of s2?
+        auto  max3 = std::minmax(s1.p1.y, s2.p1.y);
+        auto  max4 = std::minmax(s2.p1.y, s2.p2.y);
+        if((max3.first > max4.second) || (max3.second < max4.first))
+          return false;
+
+        return true;
       }
 
       /*!

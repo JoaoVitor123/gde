@@ -87,27 +87,7 @@ gde::geom::algorithm::do_intersects_v1(const gde::geom::core::line_segment& s1,
     return false;
 
 // check if bounding box intersects
-  std::pair<double, double> minmax_x_s1 = std::minmax(s1.p1.x, s1.p2.x);
-  std::pair<double, double> minmax_x_s2 = std::minmax(s2.p1.x, s2.p2.x);
-  
-// is s1 to the right of s2?
-  if(minmax_x_s1.first > minmax_x_s2.second)
-    return false;
-
-// is s1 to the left of s2?
-  if(minmax_x_s1.second < minmax_x_s2.first)
-    return false;
-  
-  std::pair<double, double> minmax_y_s1 = std::minmax(s1.p1.y, s1.p2.y);
-  std::pair<double, double> minmax_y_s2 = std::minmax(s2.p1.y, s2.p2.y);
-  
-// is s1 above s2?
-  if(minmax_y_s1.first > minmax_y_s2.second)
-    return false;
-  
-// is s1 below s2?
-  if(minmax_y_s1.second < minmax_y_s2.first)
-    return false;
+  return is_bounding_box_intersects(s1,s2);
   
 // ok: we know tha segments may overlap or cross at a single point!
   return true;
@@ -117,17 +97,9 @@ bool
 gde::geom::algorithm::do_intersects_v2(const gde::geom::core::line_segment& s1,
                                        const gde::geom::core::line_segment& s2)
 {
-// verifying the biggest point between s1.p1.x and s1.p2.x
-  auto  minmax1 = std::minmax(s1.p1.x, s1.p2.x);
-  auto  minmax2 = std::minmax(s2.p1.x, s2.p2.x);
-  if((minmax1.first > minmax2.second) || (minmax1.second < minmax2.first))
-    return false;
+// check if bounding box intersects
+  return is_bounding_box_intersects(s1,s2);
 
-// verifying the biggest point between s2.p1.y and s2.p2.y
-  auto  max3 = std::minmax(s1.p1.y, s2.p1.y);
-  auto  max4 = std::minmax(s2.p1.y, s2.p2.y);
-  if((max3.first > max4.second) || (max3.second < max4.first))
-    return false;
 
 // if the endpoints of the second segment lie on the opposite
   double a = (s2.p1.x - s1.p1.x) * (s1.p2.y - s1.p1.y) - (s2.p1.y - s1.p1.y) * (s1.p2.x - s1.p1.x);
@@ -141,7 +113,7 @@ gde::geom::algorithm::do_intersects_v2(const gde::geom::core::line_segment& s1,
   if(c != 0 && d != 0 && same_signs(c, d))
     return false;
 
- // the segments are colinear?
+// the segments are colinear?
   double det = a - b;
   if(det == 0)
     return do_collinear_segments_intersects(s1, s2);;
@@ -154,6 +126,9 @@ bool
 gde::geom::algorithm::do_intersects_v3(const gde::geom::core::line_segment& s1,
                                        const gde::geom::core::line_segment& s2)
 {
+// check if bounding box intersects
+  return is_bounding_box_intersects(s1,s2);
+
   double ax = s1.p2.x - s1.p1.x;
   double ay = s1.p2.y - s1.p1.y;
   
