@@ -83,6 +83,8 @@ namespace gde
         \brief Test if both segments intersects.
 
         \note Based on the algorithm of Mukesh Prasad (1991) in Graphics Gems II, page 7.
+
+        \note Doesn't perform  bounding box intersect test between segments.
        */
       bool
       do_intersects_v1(const gde::geom::core::line_segment& s1,
@@ -92,6 +94,8 @@ namespace gde
         \brief Test if both segments intersects.
 
         \note Based on the algorithm of Shaffer and Feustel (1992) in Graphics Gems III.
+
+        \note Doesn't perform  bounding box intersect test between segments.
        */
       bool
       do_intersects_v2(const gde::geom::core::line_segment& s1,
@@ -101,6 +105,8 @@ namespace gde
         \brief Test if both segments intersects.
        
         \note Based on the algorithm of Franklin Antonio (1992) in Graphics Gems III.
+
+        \note Doesn't perform  bounding box intersect test between segments.
        */
       bool
       do_intersects_v3(const gde::geom::core::line_segment& s1,
@@ -112,6 +118,8 @@ namespace gde
         \return The type of intersection between line segments.
 
         \note Based on the algorithm of Mukesh Prasad in Graphics Gems II, page 7.
+
+        \note Doesn't perform  bounding box intersect test between segments.
        */
       segment_relation_type
       compute_intesection_v1(const gde::geom::core::line_segment& s1,
@@ -125,6 +133,8 @@ namespace gde
        \return The type of intersection between line segments.
        
        \note Based on the algorithm of ...
+
+       \note Doesn't perform  bounding box intersect test between segments.
        */
       segment_relation_type
       compute_intesection_v2(const gde::geom::core::line_segment& s1,
@@ -139,6 +149,8 @@ namespace gde
         \return The type of intersection between line segments.
 
         \note Based on the algorithm of Franklin Antonio (1992) in Graphics Gems III.
+
+        \note Doesn't perform  bounding box intersect test between segments.
        */
       segment_relation_type
       compute_intesection_v3(const gde::geom::core::line_segment& s1,

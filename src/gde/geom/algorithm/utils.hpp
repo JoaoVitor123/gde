@@ -50,18 +50,22 @@ namespace gde
 
       /*! \brief check if bounding box intersects. */
       inline bool
-      is_bounding_box_intersects(const gde::geom::core::line_segment& s1,
+      do_bounding_box_intersects(const gde::geom::core::line_segment& s1,
                                  const gde::geom::core::line_segment& s2)
       {
-// s1 is to right or left of s2?
+// function that returns the largest and smallest among its parameters
         auto  minmax1 = std::minmax(s1.p1.x, s1.p2.x);
         auto  minmax2 = std::minmax(s2.p1.x, s2.p2.x);
+
+// s1 is to right or left of s2?
         if((minmax1.first > minmax2.second) || (minmax1.second < minmax2.first))
           return false;
 
-// s1 is to above or below of s2?
+// function that returns the largest and smallest among its parameters
         auto  minmax3 = std::minmax(s1.p1.y, s2.p1.y);
         auto  minmax4 = std::minmax(s2.p1.y, s2.p2.y);
+
+// s1 is to above or below of s2?
         if((minmax3.first > minmax4.second) || (minmax3.second < minmax4.first))
           return false;
 

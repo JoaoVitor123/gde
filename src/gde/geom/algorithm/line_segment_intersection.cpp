@@ -86,9 +86,6 @@ gde::geom::algorithm::do_intersects_v1(const gde::geom::core::line_segment& s1,
   if(r1 != 0.0 && r2 != 0.0 && same_signs(r1, r2))
     return false;
 
-// check if bounding box intersects
-  return is_bounding_box_intersects(s1,s2);
-  
 // ok: we know tha segments may overlap or cross at a single point!
   return true;
 }
@@ -97,10 +94,6 @@ bool
 gde::geom::algorithm::do_intersects_v2(const gde::geom::core::line_segment& s1,
                                        const gde::geom::core::line_segment& s2)
 {
-// check if bounding box intersects
-  return is_bounding_box_intersects(s1,s2);
-
-
 // if the endpoints of the second segment lie on the opposite
   double a = (s2.p1.x - s1.p1.x) * (s1.p2.y - s1.p1.y) - (s2.p1.y - s1.p1.y) * (s1.p2.x - s1.p1.x);
   double b = (s2.p2.x - s1.p1.x) * (s1.p2.y - s1.p1.y) - (s2.p2.y - s1.p1.y) * (s1.p2.x - s1.p1.x);
@@ -113,7 +106,7 @@ gde::geom::algorithm::do_intersects_v2(const gde::geom::core::line_segment& s1,
   if(c != 0 && d != 0 && same_signs(c, d))
     return false;
 
-// the segments are colinear?
+// are the segments collinear?
   double det = a - b;
   if(det == 0)
     return do_collinear_segments_intersects(s1, s2);;
@@ -126,9 +119,6 @@ bool
 gde::geom::algorithm::do_intersects_v3(const gde::geom::core::line_segment& s1,
                                        const gde::geom::core::line_segment& s2)
 {
-// check if bounding box intersects
-  return is_bounding_box_intersects(s1,s2);
-
   double ax = s1.p2.x - s1.p1.x;
   double ay = s1.p2.y - s1.p1.y;
   
