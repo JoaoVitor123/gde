@@ -1,1 +1,0 @@
-/usr/bin/c++    -Wall -pedantic -std=c++11    CMakeFiles/gde_unittest_geom_algorithm.dir/home/joao/GDE/gde/src/unittest/geom/algorithm/main.cpp.o  -o ../bin/gde_unittest_geom_algorithm -rdynamic ../bin/libgde_mod_geom_algorithm.a 
