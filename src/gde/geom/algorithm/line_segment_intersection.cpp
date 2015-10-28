@@ -70,7 +70,7 @@ gde::geom::algorithm::do_intersects_v1(const gde::geom::core::line_segment& s1,
 
 // if both points from segment s2 are to the sime side of line defined by segment s1,
 // we are sure s2 can not intersects s1
-  if(r3 != 0.0 && r4 != 0.0 && same_signs(r3, r4))
+  if((r3 != 0.0) && (r4 != 0.0) && same_signs(r3, r4))
     return false;
 
 // compute general line equation for segment s2
@@ -83,7 +83,7 @@ gde::geom::algorithm::do_intersects_v1(const gde::geom::core::line_segment& s1,
 
 // if both points from segment s1 are to the sime side of line defined by segment s2,
 // we are sure s1 can not intersects s2
-  if(r1 != 0.0 && r2 != 0.0 && same_signs(r1, r2))
+  if((r1 != 0.0) && (r2 != 0.0) && same_signs(r1, r2))
     return false;
 
 // ok: we know tha segments may overlap or cross at a single point!
@@ -98,23 +98,23 @@ gde::geom::algorithm::do_intersects_v2(const gde::geom::core::line_segment& s1,
   double b = (s2.p2.x - s1.p1.x) * (s1.p2.y - s1.p1.y) - (s2.p2.y - s1.p1.y) * (s1.p2.x - s1.p1.x);
 
 // if the endpoints of the second segment lie on the opposite
-  if(a != 0 && b != 0 && same_signs(a, b))
+  if((a != 0.0) && (b != 0.0) && same_signs(a, b))
     return false;
-
 
   double c = (s1.p1.x - s2.p1.x) * (s2.p2.y - s2.p1.y) - (s1.p1.y - s2.p1.y) * (s2.p2.x - s2.p1.x);
   double d = (s1.p2.x - s2.p1.x) * (s2.p2.y - s2.p1.y) - (s1.p2.y - s2.p1.y) * (s2.p2.x - s2.p1.x);
 
 // if the endpoints of the first segment lie on the opposite
-  if(c != 0 && d != 0 && same_signs(c, d))
+  if((c != 0.0) && (d != 0.0) && same_signs(c, d))
     return false;
 
 // are the segments collinear?
   double det = a - b;
-  if(det == 0)
-    return do_collinear_segments_intersects(s1, s2);;
 
-//  the segments intersect
+  if(det == 0.0)
+    return do_collinear_segments_intersects(s1, s2);
+
+// the segments intersect
   return true;
 }
 
@@ -129,11 +129,10 @@ gde::geom::algorithm::do_intersects_v3(const gde::geom::core::line_segment& s1,
   double by = s2.p1.y - s2.p2.y;
   
   double den = ay * bx - ax * by;
-  
 
-  if(den == 0.0) // are they collinear?
+// are they collinear?
+  if(den == 0.0)
     return do_collinear_segments_intersects(s1, s2);
-
 
 // they are not collinear, let's see if they intersects
   double cx = s1.p1.x - s2.p1.x;
@@ -144,7 +143,6 @@ gde::geom::algorithm::do_intersects_v3(const gde::geom::core::line_segment& s1,
 
   if(den > 0.0)
   {
-    
 // is alpha before the range [0..1] or after it?
     if((num_alpha < 0.0) || (num_alpha > den))
       return false;
