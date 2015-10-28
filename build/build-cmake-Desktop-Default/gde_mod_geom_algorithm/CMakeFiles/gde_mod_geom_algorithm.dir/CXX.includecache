@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/joao/GDE/gde/src/gde/geom/algorithm/line_segment_intersection.cpp
+line_segment_intersection.hpp
+/home/joao/GDE/gde/src/gde/geom/algorithm/line_segment_intersection.hpp
+algorithm
+-
+
+/home/joao/GDE/gde/src/gde/geom/algorithm/line_segment_intersection.hpp
+utils.hpp
+/home/joao/GDE/gde/src/gde/geom/algorithm/utils.hpp
+
+/home/joao/GDE/gde/src/gde/geom/algorithm/utils.hpp
+../core/geometric_primitives.hpp
+/home/joao/GDE/gde/src/gde/geom/core/geometric_primitives.hpp
+
+/home/joao/GDE/gde/src/gde/geom/core/geometric_primitives.hpp
+

@@ -1,0 +1,2 @@
+/usr/bin/ar cr ../bin/libgde_mod_geom_algorithm.a  CMakeFiles/gde_mod_geom_algorithm.dir/home/joao/GDE/gde/src/gde/geom/algorithm/lazy_line_segments_intersection.cpp.o CMakeFiles/gde_mod_geom_algorithm.dir/home/joao/GDE/gde/src/gde/geom/algorithm/line_segment_intersection.cpp.o
+/usr/bin/ranlib ../bin/libgde_mod_geom_algorithm.a
