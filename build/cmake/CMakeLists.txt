@@ -199,7 +199,9 @@ include(CMakeDependentOption)
 
 option(GDE_MOD_GEOM_ALGORITHM_ENABLED "Build geometry algorithms module?" ON)
 
-CMAKE_DEPENDENT_OPTION(GDE_UNITTEST_GEOM_ALGORITHM "Build unittest for geometry algoithms module?" ON "GDE_MOD_GEOM_ALGORITHM_ENABLED;GDE_BUILD_UNITTEST_ENABLED" OFF)
+CMAKE_DEPENDENT_OPTION(GDE_UNITTEST_GEOM_ALGORITHM_ENABLED "Build unittest for geometry algoithms module?" ON "GDE_MOD_GEOM_ALGORITHM_ENABLED;GDE_BUILD_UNITTEST_ENABLED" OFF)
+
+CMAKE_DEPENDENT_OPTION(GDE_BENCHMARK_ENABLED "Build benchmark?" ON "GDE_MOD_GEOM_ALGORITHM_ENABLED" OFF)
 
 
 #
@@ -235,8 +237,12 @@ if(GDE_MOD_GEOM_ALGORITHM_ENABLED)
   add_subdirectory(gde_mod_geom_algorithm)
 endif()
 
-if(GDE_UNITTEST_GEOM_ALGORITHM)
+if(GDE_UNITTEST_GEOM_ALGORITHM_ENABLED)
   add_subdirectory(gde_unittest_geom_algorithm)
+endif()
+
+if(GDE_BENCHMARK_ENABLED)
+  add_subdirectory(gde_benchmark)
 endif()
 
 
