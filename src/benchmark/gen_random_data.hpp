@@ -35,13 +35,36 @@
 
 // STL
 #include <vector>
-
+// J
+#include <random>
+#include <chrono>
+#include <algorithm>
+//
 /*!
   \brief O que esta funcao faz?
   
   Descricao de como ela faz para gerar os segmentos de forma aleatoria...
  */
-std::vector<gde::geom::core::line_segment> gen_segments(std::size_t num_segments);
+std::vector<gde::geom::core::line_segment> gen_segments(std::size_t num_segments, double max, double min);
 
+// J
+/*!
+  \brief O que esta funcao faz?
+
+  Descricao de como ela faz para gerar os segmentos de forma aleatoria...
+ */
+inline
+double gen_point();
+
+/*!
+  \brief check that the segment is between the max and min
+
+  Descricao de como ela faz para gerar os segmentos de forma aleatoria...
+ */
+inline
+bool check_segment(const gde::geom::core::line_segment& s,
+                   double max, double min);
+
+//
 
 #endif // __GDE_GEOM_ALGORITHM_LINE_SEGMENT_INTERSECTION_HPP__
