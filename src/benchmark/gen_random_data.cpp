@@ -30,7 +30,7 @@
 #include "gen_random_data.hpp"
 #include <iostream>
 
-// J
+
 double gen_point(double p_max, double p_min)
 {
 // generates a number aliatorio
@@ -43,6 +43,7 @@ double gen_point(double p_max, double p_min)
 bool check_segment(const gde::geom::core::line_segment& s,
                       double max, double min)
 {
+
 // check the highest and lowest point of the segment
   const auto&  minmax1 = std::minmax(s.p1.x, s.p2.x);
   const auto&  minmax2 = std::minmax(s.p1.y, s.p2.y);
@@ -74,6 +75,7 @@ std::vector<gde::geom::core::line_segment> gen_segments(std::size_t num_segments
 // define the points p1 and p2 of each segment
   for(int i = 0; i < num_segments; ++i)
   {
+
 // generates the points for the segments
     segment.p1.x = gen_point(p_max, p_min);
     segment.p1.y = gen_point(p_max, p_min);
