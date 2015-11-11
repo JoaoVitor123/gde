@@ -31,14 +31,13 @@
 #include <iostream>
 
 // J
-double gen_point()
+double gen_point(double p_max, double p_min)
 {
-  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-  std::default_random_engine generator (seed);
+// generates a number aliatorio
+  double n = (double)rand() / RAND_MAX;
 
-  std::uniform_int_distribution<int> distribution(0, 8);
-
-  return double(distribution(generator));
+// adjusts the number between p_max and p_min
+  return p_min + n * (p_max - p_min);
 }
 
 bool check_segment(const gde::geom::core::line_segment& s,
@@ -48,19 +47,19 @@ bool check_segment(const gde::geom::core::line_segment& s,
   const auto&  minmax1 = std::minmax(s.p1.x, s.p2.x);
   const auto&  minmax2 = std::minmax(s.p1.y, s.p2.y);
 
-// ...
-
+// checks if the points are between the max and min value
   if((minmax1.second - minmax1.first) < min || (minmax1.second - minmax1.first) > max)
     return true;
 
-// ...
   if((minmax2.second - minmax2.first) < min || (minmax2.second - minmax2.first) > max)
     return true;
 
+// returns false if the segment is valid
   return false;
 }
-//
-std::vector<gde::geom::core::line_segment> gen_segments(std::size_t num_segments, double max, double min)
+
+std::vector<gde::geom::core::line_segment> gen_segments(std::size_t num_segments, double max, double min,
+                                                        double p_max, double p_min)
 {
 
 // output segment list
@@ -69,37 +68,31 @@ std::vector<gde::geom::core::line_segment> gen_segments(std::size_t num_segments
 // we can reserve memory for #num_segments
   segments.reserve(num_segments);
 
-// J
-
+// generates a variable of type line_segment
   gde::geom::core::line_segment segment;
+
 // define the points p1 and p2 of each segment
-  for(int i = 0; i < 2; ++i)
+  for(int i = 0; i < num_segments; ++i)
   {
-// ...
-   // segment = new gde::geom::core::line_segment();
+// generates the points for the segments
+    segment.p1.x = gen_point(p_max, p_min);
+    segment.p1.y = gen_point(p_max, p_min);
 
-    segment.p1.x = gen_point();
-    segment.p1.y = gen_point();
+    segment.p2.x = gen_point(p_max, p_min);
+    segment.p2.y = gen_point(p_max, p_min);
 
-    segment.p2.x = gen_point();
-    segment.p2.y = gen_point();
-
-// ...
+// checks if the segment is within the threshold, if not Repede the process for this segment
     if(check_segment(segment, max, min))
       --i;
-    else
+
+// adds the segment to segment vector
+    else{
       segments.push_back(segment);
-    std::cout << segment.p1.x << "\n";
+      std::cout << "P1: "<< segment.p1.x << " , " << segment.p1.y << " P2: " <<segment.p2.x << " , " << segment.p2.y << "\n";
+    }
   }
-//
 
-// Passos do algoritmo de geracao de segmentos aleatorios
-// 1 - o intervalo para geracao do segmentos sera o seguinte:
-//     x [-180.0, 180.0]  => pode se tornar parametro do algoritmo
-//     y [-90.0, 90.0]    => pode se tornar parametro do algoritmo
-// 2 - num_segments define o numero de segmentos a ser gerado.
-// 3 - estabelecer o tamanho maximo e minimo de cada segmento => pode se tornar parametro do algoritmo
-
+// returns the vector segments
   return segments;
 }
 

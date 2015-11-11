@@ -39,7 +39,7 @@
 int main(int argc, char* argv[])
 {
 
-  gen_segments(4,4,1);
+  gen_segments(4,4,1,8,0);
 
   return EXIT_SUCCESS;
 }
