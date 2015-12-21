@@ -92,8 +92,8 @@ namespace gde
 
         \note This algorithm has a worst-case performance of O(n^2), but in practice it is very competitive.
        */
-      //std::vector<gde::geom::core::point>
-      //x_order_intersection(std::vector<gde::geom::core::line_segment>& segments);
+      std::vector<gde::geom::core::point>
+      x_order_intersection(const std::vector<gde::geom::core::line_segment>& segments);
 
       /*!
         \brief Given two poly-lines, named red and blue, compute the intersection points between their segments.

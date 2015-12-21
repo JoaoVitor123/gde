@@ -35,6 +35,7 @@
 
 // STL
 #include <algorithm>
+#include <functional>
 
 namespace gde
 {
@@ -122,6 +123,60 @@ namespace gde
 //     let's check if it is in the segment range
         return is_collinear_point_on_segment(p, s);
       }
+      
+      /*!
+        \struct line_segment_xy_cmp
+       
+        A functor to compare two segments from left to right.
+       
+        \pre Both segments must be left-right ordered.
+       */
+      struct line_segment_xy_cmp : std::less<gde::geom::core::line_segment>
+      {
+        bool operator()(const gde::geom::core::line_segment& lhs,
+                        const gde::geom::core::line_segment& rhs) const
+        {
+          if(lhs.p1.x < rhs.p1.x)
+            return true;
+          
+          if(lhs.p1.x > rhs.p1.x)
+            return false;
+          
+          if(lhs.p1.y < rhs.p1.y)
+            return true;
+          
+          if(lhs.p1.y > rhs.p1.y)
+            return false;
+          
+          return false;
+        }
+      };
+      
+      /*!
+        \struct sort_xy
+       
+        Given a line segment it will build a new one ordered from left to right.
+       */
+      struct sort_xy : public std::unary_function<gde::geom::core::line_segment,
+                                                  gde::geom::core::line_segment>
+      {
+        gde::geom::core::line_segment operator()(const gde::geom::core::line_segment& s)
+        {
+          if(s.p1.x < s.p2.x)
+            return s;
+          
+          if(s.p1.x > s.p2.x)
+            return gde::geom::core::line_segment(s.p2, s.p1);
+          
+          if(s.p1.y < s.p2.y)
+            return s;
+          
+          if(s.p1.y > s.p2.y)
+            return gde::geom::core::line_segment(s.p2, s.p1);
+          
+          return s;
+        }
+      };
 
     } // end namespace algorithm
   }   // end namespace geom
