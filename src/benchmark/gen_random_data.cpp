@@ -90,7 +90,6 @@ std::vector<gde::geom::core::line_segment> gen_segments(std::size_t num_segments
 // adds the segment to segment vector
     else{
       segments.push_back(segment);
-      std::cout << "P1: "<< segment.p1.x << " , " << segment.p1.y << " P2: " <<segment.p2.x << " , " << segment.p2.y << "\n";
     }
   }
 
