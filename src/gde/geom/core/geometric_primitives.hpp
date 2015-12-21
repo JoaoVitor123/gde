@@ -57,6 +57,12 @@ namespace gde
       {
         point p1;
         point p2;
+        
+        line_segment() { }
+        
+        line_segment(const point& pt1, const point& pt2)
+          : p1(pt1), p2(pt2)
+        { }
       };
 
     } // end namespace core
