@@ -28,10 +28,11 @@
  */
 
 // GDE
-/*#include <gde/geom/algorithm/line_segment_intersection.hpp>
+#include <gde/geom/algorithm/line_segment_intersection.hpp>
 #include <gde/geom/algorithm/line_segments_intersection.hpp>
+#include <benchmark/gen_random_data.cpp>
 #include <gde/geom/core/geometric_primitives.hpp>
-
+/*
 // STL
 #include <iostream>
 
@@ -75,7 +76,7 @@ int main(int argc, char* argv[])
 
   return EXIT_SUCCESS;
 }
-*/
+
 
 #include <chrono>
 #include <exception>
@@ -177,5 +178,27 @@ int main(int argc, char* argv[])
   //teste_future_async(argc, argv);
   teste_thread(argc, argv);
  
+  return EXIT_SUCCESS;
+}
+*/
+
+// test 1
+void test1(std::vector<gde::geom::core::line_segment> segments)
+{
+   clock_t Ticks[2];
+   Ticks[0] = clock();
+   gde::geom::algorithm::x_order_intersection(segments);
+   Ticks[1] = clock();
+   double Tempo = (Ticks[1] - Ticks[0]) * 1.0 / CLOCKS_PER_SEC;
+   std::cout << "\n\n" << Tempo << "   X_Ordering" << "\n";
+}
+
+int main(int argc, char* argv[])
+{
+ std::vector<gde::geom::core::line_segment> segments;
+
+  segments = gen_segments(2000,20,0,1000,0);
+  test1(segments);
+
   return EXIT_SUCCESS;
 }

@@ -29,10 +29,13 @@
 
 // GDE
 #include "line_segments_intersection.hpp"
+#include "line_segment_intersection.hpp"
 #include "utils.hpp"
+
 
 // STL
 #include <algorithm>
+#include <iostream>
 
 std::vector<gde::geom::core::point>
 gde::geom::algorithm::x_order_intersection(const std::vector<gde::geom::core::line_segment>& segments)
@@ -49,6 +52,30 @@ gde::geom::algorithm::x_order_intersection(const std::vector<gde::geom::core::li
   std::vector<gde::geom::core::point> ipts;
   
   gde::geom::core::point p1, p2;
+
+// first scan in ordered_segments
+  for (int i = 0; i < ordered_segments.size(); ++i)
+  {
+// segunda varredura do ponto atual em diante
+    for (int j = i; j < ordered_segments.size(); j++)
+    {
+
+// verifies that the value of the first scan does not have more intersection
+      if(ordered_segments[i].p2.x < ordered_segments[j].p1.x)
+        break;
+      else
+      {
+// varifica the intersection
+        if(gde::geom::algorithm::do_intersects_v3(ordered_segments[i], ordered_segments[j]))
+        {
+
+// Compute the intersection point
+          gde::geom::algorithm::compute_intesection_v3(ordered_segments[i], ordered_segments[j], p1, p2);
+          ipts.push_back(p1);
+        }
+      }
+    }
+  }
 /*
   segments_order = segments_ord(segments);
   int cont = 0, cont_aux = 0;
