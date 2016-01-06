@@ -35,34 +35,16 @@
 
 // STL
 #include <vector>
-#include <random>
-#include <algorithm>
-
-/*!
-  \brief generates a doble between p_max and p_min
-
-  Picks a double number between p_max and p_min using the function rand.
- */
-inline
-double gen_point(double p_max, double p_min);
-
-/*!
-  \brief check that the segment is between the max and min
-
-  Using the function minmax determines the highest and lowest ponro and compares them with the values ​​and min but to validate the segment.
- */
-inline
-bool check_segment(const gde::geom::core::line_segment& s,
-                   double max, double min);
 
 /*!
   \brief Generates line segments
 
   This function takes receives the parameters to generate line segments , it creates segments with gen_point function and then checks with check_segment function
  */
-std::vector<gde::geom::core::line_segment> gen_segments(std::size_t num_segments, double max, double min,
-                                                        double p_max, double p_min);
-
-
+std::vector<gde::geom::core::line_segment>
+gen_segments(std::size_t num_segments,
+             std::pair<double, double> x_interval,
+             std::pair<double, double> y_interval,
+             double min_length, double max_length);
 
 #endif // __GDE_GEOM_ALGORITHM_LINE_SEGMENT_INTERSECTION_HPP__

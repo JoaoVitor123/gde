@@ -21,52 +21,36 @@
 /*!
   \file benchmark/gen_random_data.cpp
 
-  \brief Utility functiond for generating random data.
+  \brief Utility functions for generating random data.
 
   \author Joao Vitor Chagas
  */
 
 // GDE
 #include "gen_random_data.hpp"
-#include <iostream>
 
+// STL
+#include <algorithm>
+#include <random>
 
-double gen_point(double p_max, double p_min)
+//! Generates a random number between min_val and max_val.
+double gen_value(double min_val, double max_val)
 {
-// generates a number aliatorio
-  double n = (double)rand() / RAND_MAX;
+  double n = static_cast<double>(rand()) / static_cast<double>(RAND_MAX);
 
-// adjusts the number between p_max and p_min
-  return p_min + n * (p_max - p_min);
+  return min_val + n * (max_val - min_val);
 }
 
-bool check_segment(const gde::geom::core::line_segment& s,
-                      double max, double min)
+std::vector<gde::geom::core::line_segment>
+gen_segments(std::size_t num_segments,
+             std::pair<double, double> x_interval,
+             std::pair<double, double> y_interval,
+             double min_length, double max_length)
 {
-
-// check the highest and lowest point of the segment
-  const auto&  minmax1 = std::minmax(s.p1.x, s.p2.x);
-  const auto&  minmax2 = std::minmax(s.p1.y, s.p2.y);
-
-// checks if the points are between the max and min value
-  if((minmax1.second - minmax1.first) < min || (minmax1.second - minmax1.first) > max)
-    return true;
-
-  if((minmax2.second - minmax2.first) < min || (minmax2.second - minmax2.first) > max)
-    return true;
-
-// returns false if the segment is valid
-  return false;
-}
-
-std::vector<gde::geom::core::line_segment> gen_segments(std::size_t num_segments, double max, double min,
-                                                        double p_max, double p_min)
-{
-
 // output segment list
   std::vector<gde::geom::core::line_segment> segments;
   
-// we can reserve memory for #num_segments
+// reserve memory for #num_segments
   segments.reserve(num_segments);
 
 // generates a variable of type line_segment
@@ -75,25 +59,17 @@ std::vector<gde::geom::core::line_segment> gen_segments(std::size_t num_segments
 // define the points p1 and p2 of each segment
   for(int i = 0; i < num_segments; ++i)
   {
+// generates the first point of the segment in the interval
+    segment.p1.x = gen_value(x_interval.first, x_interval.second - max_length);
+    segment.p1.y = gen_value(y_interval.first, y_interval.second - max_length);
 
-// generates the points for the segments
-    segment.p1.x = gen_point(p_max, p_min);
-    segment.p1.y = gen_point(p_max, p_min);
+// the second segment point is constrained to min_length and max_length
+    segment.p2.x = gen_value(segment.p1.x + min_length, segment.p1.x + max_length);
+    segment.p2.y = gen_value(segment.p1.y + min_length, segment.p1.y + max_length);
 
-    segment.p2.x = gen_point(p_max, p_min);
-    segment.p2.y = gen_point(p_max, p_min);
-
-// checks if the segment is within the threshold, if not Repede the process for this segment
-    if(check_segment(segment, max, min))
-      --i;
-
-// adds the segment to segment vector
-    else{
-      segments.push_back(segment);
-    }
+    segments.push_back(segment);
   }
 
-// returns the vector segments
   return segments;
 }
 

@@ -44,11 +44,11 @@ gde::geom::algorithm::lazy_intersection(const std::vector<gde::geom::core::line_
   {
     const gde::geom::core::line_segment& red = segments[i];
 
-    for(std::size_t j = i + 1; j != number_of_segments; ++j)
+    for(std::size_t j = i + 1; j < number_of_segments; ++j)
     {
       const gde::geom::core::line_segment& blue = segments[j];
 
-      segment_relation_type spatial_relation = compute_intesection_v1(red, blue, ip1, ip2);
+      segment_relation_type spatial_relation = compute_intesection_v3(red, blue, ip1, ip2);
 
       if(spatial_relation == DISJOINT)
         continue;
@@ -60,5 +60,5 @@ gde::geom::algorithm::lazy_intersection(const std::vector<gde::geom::core::line_
     }
   }
 
-  return result;
+  return std::move(result);
 }

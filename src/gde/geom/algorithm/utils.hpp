@@ -145,20 +145,46 @@ namespace gde
           if(lhs.p1.y < rhs.p1.y)
             return true;
           
-          if(lhs.p1.y > rhs.p1.y)
-            return false;
+          //if(lhs.p1.y > rhs.p1.y)
+          //  return false;
           
           return false;
         }
       };
       
       /*!
-        \struct sort_xy
+        \struct point_xy_cmp
+       
+        A functor to compare two points: left to right.
+       */
+      struct point_xy_cmp : std::less<gde::geom::core::point>
+      {
+        bool operator()(const gde::geom::core::point& lhs,
+                        const gde::geom::core::point& rhs) const
+        {
+          if(lhs.x < rhs.x)
+            return true;
+          
+          if(lhs.x > rhs.x)
+            return false;
+          
+          if(lhs.y < rhs.y)
+            return true;
+          
+          //if(lhs.y > rhs.y)
+          //  return false;
+          
+          return false;
+        }
+      };
+      
+      /*!
+        \struct sort_segment_xy
        
         Given a line segment it will build a new one ordered from left to right.
        */
-      struct sort_xy : public std::unary_function<gde::geom::core::line_segment,
-                                                  gde::geom::core::line_segment>
+      struct sort_segment_xy : public std::unary_function<gde::geom::core::line_segment,
+                                                          gde::geom::core::line_segment>
       {
         gde::geom::core::line_segment operator()(const gde::geom::core::line_segment& s)
         {

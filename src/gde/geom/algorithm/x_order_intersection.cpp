@@ -43,61 +43,41 @@ gde::geom::algorithm::x_order_intersection(const std::vector<gde::geom::core::li
 // create a new segment vector with the same size as input segments
   std::vector<gde::geom::core::line_segment> ordered_segments(segments.size());
 
-// copy the input segments to ordered_segments and invert the extreme points if needed
-  std::transform(segments.begin(), segments.end(), ordered_segments.begin(), sort_xy());
+// copy the input segments and order each one them from left-right
+  std::transform(segments.begin(), segments.end(), ordered_segments.begin(), sort_segment_xy());
 
-// sort the segments from left to right
+// sort all the segments from left to right
   std::sort(ordered_segments.begin(), ordered_segments.end(), line_segment_xy_cmp());
 
+// output list of intersection points
   std::vector<gde::geom::core::point> ipts;
   
-  gde::geom::core::point p1, p2;
+// retain intersection points between tests
+  gde::geom::core::point ip1, ip2;
 
-// first scan in ordered_segments
-  for (int i = 0; i < ordered_segments.size(); ++i)
+// first scan ordered_segments from the first segment
+  for(int i = 0; i < (ordered_segments.size() - 1); ++i)
   {
-// segunda varredura do ponto atual em diante
-    for (int j = i; j < ordered_segments.size(); j++)
+// scan segments from i + 1
+    for (int j = i + 1; j < ordered_segments.size(); j++)
     {
-
-// verifies that the value of the first scan does not have more intersection
+// if beginning x-coordinate of the second is greater than the last
+// x-coordinate of the first segment: stop => no more segments can intersects.
       if(ordered_segments[i].p2.x < ordered_segments[j].p1.x)
         break;
-      else
-      {
-// varifica the intersection
-        if(gde::geom::algorithm::do_intersects_v3(ordered_segments[i], ordered_segments[j]))
-        {
-
-// Compute the intersection point
-          gde::geom::algorithm::compute_intesection_v3(ordered_segments[i], ordered_segments[j], p1, p2);
-          ipts.push_back(p1);
-        }
-      }
+      
+// check for intersection
+      segment_relation_type result = compute_intesection_v3(ordered_segments[i], ordered_segments[j], ip1, ip2);
+      
+      if(result == DISJOINT)
+        continue;
+      
+      ipts.push_back(ip1);
+      
+      if(result == OVERLAP)
+        ipts.push_back(ip2);
     }
   }
-/*
-  segments_order = segments_ord(segments);
-  int cont = 0, cont_aux = 0;
-// X-ordering
-  for(const auto& value: segments_order)
-  {
-    ++cont;
-    //std::cout << cont << "\n";
-    //std::cout << value.p1.y << "\n";
-    for(const auto& value2: segments_order)
-    {
-      if(cont_aux > cont && value.p2.x < value2.p1.x && value.p2.y < value2.p1.y && value.p1.y > value2.p2.y)// varedura y delimitada
-      {
-        if(gde::geom::algorithm::do_intersects_v3(value, value2))
-        {
-          gde::geom::algorithm::compute_intesection_v3(value, value2, p1, p2);
-          std::cout << "X ordening point:  x = "<< p1.x <<  "  y = " << p1.y  << "\n";
-        }
-      }
-      ++cont_aux;
-    }
-  }*/
 
-  return ipts;
+  return std::move(ipts);
 }
