@@ -47,6 +47,9 @@ gde::geom::algorithm::lazy_intersection(const std::vector<gde::geom::core::line_
     for(std::size_t j = i + 1; j < number_of_segments; ++j)
     {
       const gde::geom::core::line_segment& blue = segments[j];
+      
+      if(!do_bounding_box_intersects(red, blue))
+        continue;
 
       segment_relation_type spatial_relation = compute_intesection_v3(red, blue, ip1, ip2);
 

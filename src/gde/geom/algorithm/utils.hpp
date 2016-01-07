@@ -49,7 +49,11 @@ namespace gde
         return ((v1 > 0.0 && v2 > 0.0) || (v1 < 0.0 && v2 < 0.0)) ? true : false;
       }
 
-      /*! \brief check if bounding box intersects. */
+      /*!
+        \brief Check if bounding box intersects.
+       
+        \note This version will not take into account the segments order.
+       */
       inline bool
       do_bounding_box_intersects(const gde::geom::core::line_segment& s1,
                                  const gde::geom::core::line_segment& s2)
@@ -63,13 +67,67 @@ namespace gde
           return false;
 
 // function that returns the largest and smallest among its parameters
-        const auto&  minmax3 = std::minmax(s1.p1.y, s2.p1.y);
+        const auto&  minmax3 = std::minmax(s1.p1.y, s1.p2.y);
         const auto&  minmax4 = std::minmax(s2.p1.y, s2.p2.y);
 
 // s1 is to above or below of s2?
         if((minmax3.first > minmax4.second) || (minmax3.second < minmax4.first))
           return false;
 
+        return true;
+      }
+      
+      /*!
+        \brief Check if bounding box intersects.
+       
+        \note This version will assume that segments are left-right ordered.
+       */
+      inline bool
+      do_bounding_box_intersects_v2(const gde::geom::core::line_segment& s1,
+                                    const gde::geom::core::line_segment& s2)
+      {
+// if s1 is to left of s2, they don't intersects
+        if(s1.p2.x < s2.p1.x)
+          return false;
+        
+// if s1 is to right of s2, they don't intersects
+        if(s1.p1.x > s2.p2.x)
+          return false;
+        
+// find min and max y for each segment
+        const auto&  s1_minmax_y = std::minmax(s1.p1.y, s1.p2.y);
+        const auto&  s2_minmax_y = std::minmax(s2.p1.y, s2.p2.y);
+        
+// if s1 is below s2, they don't intersects
+        if(s1_minmax_y.second < s2_minmax_y.first)
+          return false;
+
+// if s1 is above s2, they don't intersects
+        if(s1_minmax_y.first > s2_minmax_y.second)
+          return false;
+        
+        return true;
+      }
+      
+      /*!
+        \brief Check if segments interval-y intersects.
+       */
+      inline bool
+      do_y_interval_intersects(const gde::geom::core::line_segment& s1,
+                               const gde::geom::core::line_segment& s2)
+      {
+ // find min and max y for each segment
+        const auto&  s1_minmax_y = std::minmax(s1.p1.y, s1.p2.y);
+        const auto&  s2_minmax_y = std::minmax(s2.p1.y, s2.p2.y);
+        
+// if s1 is below s2, they don't intersects
+        if(s1_minmax_y.second < s2_minmax_y.first)
+          return false;
+        
+// if s1 is above s2, they don't intersects
+        if(s1_minmax_y.first > s2_minmax_y.second)
+          return false;
+        
         return true;
       }
 

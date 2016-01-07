@@ -119,7 +119,7 @@ namespace gde
 
         \note Based on the algorithm of Mukesh Prasad in Graphics Gems II, page 7.
 
-        \note Doesn't perform  bounding box intersect test between segments.
+        \note Doesn't perform bounding box intersect test between segments.
        */
       segment_relation_type
       compute_intesection_v1(const gde::geom::core::line_segment& s1,

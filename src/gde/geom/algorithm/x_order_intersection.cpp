@@ -35,7 +35,6 @@
 
 // STL
 #include <algorithm>
-#include <iostream>
 
 std::vector<gde::geom::core::point>
 gde::geom::algorithm::x_order_intersection(const std::vector<gde::geom::core::line_segment>& segments)
@@ -65,6 +64,11 @@ gde::geom::algorithm::x_order_intersection(const std::vector<gde::geom::core::li
 // x-coordinate of the first segment: stop => no more segments can intersects.
       if(ordered_segments[i].p2.x < ordered_segments[j].p1.x)
         break;
+
+// if segments y-interval don't intersect they will not have intersection,
+// let's test the next segment!
+      if(!do_y_interval_intersects(ordered_segments[i], ordered_segments[j]))
+        continue;
       
 // check for intersection
       segment_relation_type result = compute_intesection_v3(ordered_segments[i], ordered_segments[j], ip1, ip2);
