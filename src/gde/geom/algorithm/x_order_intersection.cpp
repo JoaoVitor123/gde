@@ -70,9 +70,6 @@ gde::geom::algorithm::x_order_intersection(const std::vector<gde::geom::core::li
       if(!do_y_interval_intersects(ordered_segments[i], ordered_segments[j]))
         continue;
 
-      if(!do_intersects_v1(ordered_segments[i], ordered_segments[j]))
-        continue;
-      
 // check for intersection
       segment_relation_type result = compute_intesection_v1(ordered_segments[i], ordered_segments[j], ip1, ip2);
       

@@ -27,8 +27,8 @@
  */
 
 
-#ifndef __GDE_GEOM_ALGORITHM_LINE_SEGMENT_INTERSECTION_HPP__
-#define __GDE_GEOM_ALGORITHM_LINE_SEGMENT_INTERSECTION_HPP__
+#ifndef __GDE_BENCHMARK_GEN_RANDOM_DATA_HPP__
+#define __GDE_BENCHMARK_GEN_RANDOM_DATA_HPP__
 
 // GDE
 #include <gde/geom/core/geometric_primitives.hpp>
@@ -47,4 +47,4 @@ gen_segments(std::size_t num_segments,
              std::pair<double, double> y_interval,
              double min_length, double max_length);
 
-#endif // __GDE_GEOM_ALGORITHM_LINE_SEGMENT_INTERSECTION_HPP__
+#endif // __GDE_BENCHMARK_GEN_RANDOM_DATA_HPP__
