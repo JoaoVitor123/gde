@@ -61,8 +61,43 @@ void print(const std::vector<gde::geom::core::point>& pts)
   }
 }
 
-
 void test1()
+{
+  gde::geom::core::line_segment s1({1, 4}, {4, 4});
+  gde::geom::core::line_segment s2({1, 1}, {6, 5});
+  gde::geom::core::line_segment s3({5, 3}, {8, 2});
+  
+  bool result = gde::geom::algorithm::do_intersects_v1(s1, s2);
+  result = gde::geom::algorithm::do_intersects_v1(s2, s1);
+  
+  result = gde::geom::algorithm::do_intersects_v1(s1, s3);
+  result = gde::geom::algorithm::do_intersects_v1(s3, s1);
+  
+  result = gde::geom::algorithm::do_intersects_v1(s2, s3);
+  result = gde::geom::algorithm::do_intersects_v1(s3, s2);
+  
+  result = gde::geom::algorithm::do_intersects_v2(s1, s2);
+  result = gde::geom::algorithm::do_intersects_v2(s2, s1);
+  
+  result = gde::geom::algorithm::do_intersects_v2(s1, s3);
+  result = gde::geom::algorithm::do_intersects_v2(s3, s1);
+  
+  result = gde::geom::algorithm::do_intersects_v2(s2, s3);
+  result = gde::geom::algorithm::do_intersects_v2(s3, s2);
+  
+  result = gde::geom::algorithm::do_intersects_v3(s1, s2);
+  result = gde::geom::algorithm::do_intersects_v3(s2, s1);
+  
+  result = gde::geom::algorithm::do_intersects_v3(s1, s3);
+  result = gde::geom::algorithm::do_intersects_v3(s3, s1);
+  
+  result = gde::geom::algorithm::do_intersects_v3(s2, s3);
+  result = gde::geom::algorithm::do_intersects_v3(s3, s2);
+  
+  return;
+}
+
+void test2()
 {
   std::vector<gde::geom::core::line_segment> segments = gen_segments(8000,
                                                                      std::make_pair(-180.0, 180.0),
