@@ -30,12 +30,14 @@
 #include "gen_random_data.hpp"
 
 // GDE
+#include <gde/geom/core/geometric_primitives.hpp>
 #include <gde/geom/algorithm/line_segment_intersection.hpp>
 #include <gde/geom/algorithm/line_segments_intersection.hpp>
 #include <gde/geom/algorithm/utils.hpp>
 
 // STL
 #include <iostream>
+#include <iomanip>
 
 void print(const std::vector<gde::geom::core::line_segment>& segments)
 {
@@ -99,7 +101,7 @@ void test1()
 
 void test2()
 {
-  std::vector<gde::geom::core::line_segment> segments = gen_segments(8000,
+  std::vector<gde::geom::core::line_segment> segments = gen_segments(100,
                                                                      std::make_pair(-180.0, 180.0),
                                                                      std::make_pair(-90.0, 90.0),
                                                                      20.0, 40.0);
@@ -108,20 +110,28 @@ void test2()
   std::vector<gde::geom::core::point> ips1 = gde::geom::algorithm::x_order_intersection(segments);
   
   std::sort(ips1.begin(), ips1.end(), gde::geom::algorithm::point_xy_cmp());
-  //print(ips1);
+  print(ips1);
   
   std::vector<gde::geom::core::point> ips2 = gde::geom::algorithm::lazy_intersection(segments);
   
   std::sort(ips2.begin(), ips2.end(), gde::geom::algorithm::point_xy_cmp());
-  //print(ips2);
+  print(ips2);
   
-  std::cout << "ips1 == ips2 ? " << (ips1.size() == ips2.size()) << std::endl;
+  std::cout << "ips1 == ips2 ? " << (ips1 == ips2) << std::endl;
   std::cout << "ips1 = "<< ips1.size() << "  ips2 = " << ips2.size() << std::endl;
+  
+  typedef std::vector<gde::geom::core::point>::iterator intersection_point_it;
+  
+  std::pair<intersection_point_it, intersection_point_it> diffs = std::mismatch(ips1.begin(), ips1.end(), ips2.begin());
+  
+  std::cout << std::setprecision(18) << "v1 = " << diffs.first->x << "\tv2 = " << diffs.second->x << std::endl;
+  std::cout << std::setprecision(18) << "v1 = " << diffs.first->y << "\tv2 = " << diffs.second->y << std::endl;
 }
 
 int main(int argc, char* argv[])
 {
   test1();
+  test2();
   
   return EXIT_SUCCESS;
 }

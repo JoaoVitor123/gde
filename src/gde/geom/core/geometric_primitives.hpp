@@ -46,6 +46,11 @@ namespace gde
       {
         double x;
         double y;
+        
+        //bool operator==(const gde::geom::core::point& rhs) const
+        //{
+        //  return (x == rhs.x) && (y == rhs.y);
+        //}
       };
 
       /*!
@@ -64,10 +69,17 @@ namespace gde
           : p1(pt1), p2(pt2)
         { }
       };
+      
+      inline bool operator==(const point& lhs, const point& rhs)
+      {
+        return (lhs.x == rhs.x) && (lhs.y == rhs.y);
+      }
 
     } // end namespace core
   } // end namespace geom
 } // end namespace gde
+
+
 
 #endif // __GDE_GEOM_CORE_GEOMETRIC_PRMITIVES_HPP__
 

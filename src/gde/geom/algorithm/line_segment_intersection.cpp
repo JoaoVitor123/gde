@@ -179,18 +179,6 @@ gde::geom::algorithm::compute_intesection_v1(const gde::geom::core::line_segment
                                              gde::geom::core::point& first,
                                              gde::geom::core::point& second)
 {
-    /*
-// compute general line equation for segment s1
-  double a1 = s1.p2.y - s1.p1.y;
-  double b1 = s1.p1.x - s1.p2.x;
-  double c1 = (s1.p2.x * s1.p1.y) - (s1.p1.x * s1.p2.y);
-
-// compute general line equation for segment s2
-  double a2 = s2.p2.y - s2.p1.y;
-  double b2 = s2.p1.x - s2.p2.x;
-  double c2 = (s2.p2.x * s2.p1.y) - (s2.p1.x * s2.p2.y);*/
-
-
   double a1 = s1.p2.y - s1.p1.y;
   double b1 = s1.p1.x - s1.p2.x;
   double c1 = (s1.p2.x * s1.p1.y) - (s1.p1.x * s1.p2.y);
@@ -215,8 +203,6 @@ gde::geom::algorithm::compute_intesection_v1(const gde::geom::core::line_segment
 // we are sure s1 can not intersects s2
   if((r1 != 0.0) && (r2 != 0.0) && same_signs(r1, r2))
     return DISJOINT;
-
-  ///
 
 // setting the denominator
   double denom = a1 * b2 - a2 * c1;
