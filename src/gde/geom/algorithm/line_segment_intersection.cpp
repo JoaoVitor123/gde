@@ -155,7 +155,7 @@ gde::geom::algorithm::do_intersects_v3(const gde::geom::core::line_segment& s1,
   }
 
 // is beta in the range [0..1]
-  double num_beta = ay * bx - ax * by;
+  double num_beta = ax * cy - ay * cx;
   
   if(den > 0.0)
   {
@@ -169,7 +169,7 @@ gde::geom::algorithm::do_intersects_v3(const gde::geom::core::line_segment& s1,
     if((num_beta > 0.0) || (num_beta < den))
       return false;
   }
-  
+
   return true;
 }
 
@@ -179,6 +179,7 @@ gde::geom::algorithm::compute_intesection_v1(const gde::geom::core::line_segment
                                              gde::geom::core::point& first,
                                              gde::geom::core::point& second)
 {
+    /*
 // compute general line equation for segment s1
   double a1 = s1.p2.y - s1.p1.y;
   double b1 = s1.p1.x - s1.p2.x;
@@ -187,7 +188,35 @@ gde::geom::algorithm::compute_intesection_v1(const gde::geom::core::line_segment
 // compute general line equation for segment s2
   double a2 = s2.p2.y - s2.p1.y;
   double b2 = s2.p1.x - s2.p2.x;
+  double c2 = (s2.p2.x * s2.p1.y) - (s2.p1.x * s2.p2.y);*/
+
+
+  double a1 = s1.p2.y - s1.p1.y;
+  double b1 = s1.p1.x - s1.p2.x;
+  double c1 = (s1.p2.x * s1.p1.y) - (s1.p1.x * s1.p2.y);
+
+  double r3 = a1 * s2.p1.x + b1 * s2.p1.y + c1;
+  double r4 = a1 * s2.p2.x + b1 * s2.p2.y + c1;
+
+// if both points from segment s2 are to the sime side of line defined by segment s1,
+// we are sure s2 can not intersects s1
+  if((r3 != 0.0) && (r4 != 0.0) && same_signs(r3, r4))
+    return DISJOINT;
+
+// compute general line equation for segment s2
+  double a2 = s2.p2.y - s2.p1.y;
+  double b2 = s2.p1.x - s2.p2.x;
   double c2 = (s2.p2.x * s2.p1.y) - (s2.p1.x * s2.p2.y);
+
+  double r1 = a2 * s1.p1.x + b2 * s1.p1.y + c2;
+  double r2 = a2 * s1.p2.x + b2 * s1.p2.y + c2;
+
+// if both points from segment s1 are to the sime side of line defined by segment s2,
+// we are sure s1 can not intersects s2
+  if((r1 != 0.0) && (r2 != 0.0) && same_signs(r1, r2))
+    return DISJOINT;
+
+  ///
 
 // setting the denominator
   double denom = a1 * b2 - a2 * c1;
@@ -285,7 +314,7 @@ gde::geom::algorithm::compute_intesection_v3(const gde::geom::core::line_segment
   }
   
 // is beta in the range [0..1]
-  double num_beta = ay * bx - ax * by;
+  double num_beta = ax * cy - ay * cx;
   
   if(den > 0.0)
   {
