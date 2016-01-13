@@ -43,13 +43,13 @@ namespace gde
       {
         if(p1->x < p2->x)
           return true;
-        
+
         if(p1->x > p2->x)
           return false;
-        
+
         if(p1->y < p2->y)
           return true;
-        
+
         return false;
       }
     }
@@ -64,7 +64,7 @@ gde::geom::algorithm::do_intersects_v1(const gde::geom::core::line_segment& s1,
   double a1 = s1.p2.y - s1.p1.y;
   double b1 = s1.p1.x - s1.p2.x;
   double c1 = (s1.p2.x * s1.p1.y) - (s1.p1.x * s1.p2.y);
-  
+
   double r3 = a1 * s2.p1.x + b1 * s2.p1.y + c1;
   double r4 = a1 * s2.p2.x + b1 * s2.p2.y + c1;
 
@@ -77,7 +77,7 @@ gde::geom::algorithm::do_intersects_v1(const gde::geom::core::line_segment& s1,
   double a2 = s2.p2.y - s2.p1.y;
   double b2 = s2.p1.x - s2.p2.x;
   double c2 = (s2.p2.x * s2.p1.y) - (s2.p1.x * s2.p2.y);
-  
+
   double r1 = a2 * s1.p1.x + b2 * s1.p1.y + c2;
   double r2 = a2 * s1.p2.x + b2 * s1.p2.y + c2;
 
@@ -124,10 +124,10 @@ gde::geom::algorithm::do_intersects_v3(const gde::geom::core::line_segment& s1,
 {
   double ax = s1.p2.x - s1.p1.x;
   double ay = s1.p2.y - s1.p1.y;
-  
+
   double bx = s2.p1.x - s2.p2.x;
   double by = s2.p1.y - s2.p2.y;
-  
+
   double den = ay * bx - ax * by;
 
 // are they collinear?
@@ -137,7 +137,7 @@ gde::geom::algorithm::do_intersects_v3(const gde::geom::core::line_segment& s1,
 // they are not collinear, let's see if they intersects
   double cx = s1.p1.x - s2.p1.x;
   double cy = s1.p1.y - s2.p1.y;
-  
+
 // is alpha in the range [0..1]
   double num_alpha = by * cx - bx * cy;
 
@@ -207,41 +207,42 @@ gde::geom::algorithm::compute_intesection_v1(const gde::geom::core::line_segment
 // setting the denominator
   double denom = a1 * b2 - a2 * c1;
 
-// they are not collinear
-  if(denom == 0)
+  if(denom == 0.0)  // are they collinear?
   {
-      if(do_collinear_segments_intersects(s1, s2) == false)
-          return DISJOINT;
+    if(do_collinear_segments_intersects(s1, s2) == false)
+      return DISJOINT;
 // and we know they intersects: let's order the segments and find out intersection(s)
-      const gde::geom::core::point* pts[4];
-      pts[0] = &s1.p1;
-      pts[1] = &s1.p2;
-      pts[2] = &s2.p1;
-      pts[3] = &s2.p2;
+    const gde::geom::core::point* pts[4];
+    pts[0] = &s1.p1;
+    pts[1] = &s1.p2;
+    pts[2] = &s2.p1;
+    pts[3] = &s2.p2;
 
-      std::sort(pts, pts + 4, point_cmp);
+    std::sort(pts, pts + 4, point_cmp);
 
 // at least they will share one point
-      first = *pts[1];
+    first = *pts[1];
 
 // and if segments touch in a single point they are equal
-      if((pts[1]->x == pts[2]->x) && (pts[1]->y == pts[2]->y))
-        return TOUCH;
+    if((pts[1]->x == pts[2]->x) && (pts[1]->y == pts[2]->y))
+      return TOUCH;
 
 // otherwise, the middle points are the intesections
-      second = *pts[2];
-      return OVERLAP;
+    second = *pts[2];
+
+    return OVERLAP;
   }
 
-  double offset = denom < 0 ? - denom / 2 : denom / 2;
+// ok: they are not collinear!
+  double offset = denom < 0.0 ? - denom / 2.0 : denom / 2.0;
 
 // setting the numerator
 // compute intersection point
   double num_alpha = b1 * c2 - b2 * c1;
-  first.x = (num_alpha < 0 ? num_alpha - offset : num_alpha + offset) / denom;
+  first.x = (num_alpha < 0.0 ? num_alpha - offset : num_alpha + offset) / denom;
 
   double num_beta = a2 * c1 - a1 * c2;
-  first.y = (num_beta < 0 ? num_beta - offset : num_beta + offset) / denom;
+  first.y = (num_beta < 0.0 ? num_beta - offset : num_beta + offset) / denom;
 
   return CROSS;
 }
@@ -266,10 +267,9 @@ gde::geom::algorithm::compute_intesection_v2(const gde::geom::core::line_segment
   if((c != 0.0) && (d != 0.0) && same_signs(c, d))
     return DISJOINT;
 
-
   double det = a - b;
-// are the segments collinear?
-  if(det == 0.0)
+
+  if(det == 0.0)  // are the segments collinear?
   {
     if(do_collinear_segments_intersects(s1, s2) == false)
       return DISJOINT;
@@ -292,12 +292,16 @@ gde::geom::algorithm::compute_intesection_v2(const gde::geom::core::line_segment
 
 // otherwise, the middle points are the intesections
     second = *pts[2];
+
     return OVERLAP;
   }
 
+// ok: they are not collinear!
+
   double tdet = -c;
-// The denominator of the parameter must be positive
-  if(det < 0)
+
+// the denominator of the parameter must be positive
+  if(det < 0.0)
   {
     det = -det;
     tdet = -tdet;
@@ -320,12 +324,12 @@ gde::geom::algorithm::compute_intesection_v3(const gde::geom::core::line_segment
 {
   double ax = s1.p2.x - s1.p1.x;
   double ay = s1.p2.y - s1.p1.y;
-  
+
   double bx = s2.p1.x - s2.p2.x;
   double by = s2.p1.y - s2.p2.y;
   
   double den = ay * bx - ax * by;
-  
+
   if(den == 0.0) // are they collinear?
   {
 // yes!
@@ -338,12 +342,12 @@ gde::geom::algorithm::compute_intesection_v3(const gde::geom::core::line_segment
     pts[1] = &s1.p2;
     pts[2] = &s2.p1;
     pts[3] = &s2.p2;
-    
+
     std::sort(pts, pts + 4, point_cmp);
-    
+
 // at least they will share one point
     first = *pts[1];
-    
+
 // and if segments touch in a single point they are equal
     if((pts[1]->x == pts[2]->x) && (pts[1]->y == pts[2]->y))
       return TOUCH;
@@ -357,10 +361,10 @@ gde::geom::algorithm::compute_intesection_v3(const gde::geom::core::line_segment
 // they are not collinear, let's see if they intersects
   double cx = s1.p1.x - s2.p1.x;
   double cy = s1.p1.y - s2.p1.y;
-  
+
 // is alpha in the range [0..1]
   double num_alpha = by * cx - bx * cy;
-  
+
   if(den > 0.0)
   {
 // is alpha before the range [0..1] or after it?
@@ -373,10 +377,10 @@ gde::geom::algorithm::compute_intesection_v3(const gde::geom::core::line_segment
     if((num_alpha > 0.0) || (num_alpha < den))
       return DISJOINT;
   }
-  
+
 // is beta in the range [0..1]
   double num_beta = ax * cy - ay * cx;
-  
+
   if(den > 0.0)
   {
 // is beta before the range [0..1] or after it?
@@ -398,5 +402,4 @@ gde::geom::algorithm::compute_intesection_v3(const gde::geom::core::line_segment
 
   return CROSS;
 }
-
 
