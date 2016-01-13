@@ -212,6 +212,25 @@ gde::geom::algorithm::compute_intesection_v1(const gde::geom::core::line_segment
   {
       if(do_collinear_segments_intersects(s1, s2) == false)
           return DISJOINT;
+// and we know they intersects: let's order the segments and find out intersection(s)
+      const gde::geom::core::point* pts[4];
+      pts[0] = &s1.p1;
+      pts[1] = &s1.p2;
+      pts[2] = &s2.p1;
+      pts[3] = &s2.p2;
+
+      std::sort(pts, pts + 4, point_cmp);
+
+// at least they will share one point
+      first = *pts[1];
+
+// and if segments touch in a single point they are equal
+      if((pts[1]->x == pts[2]->x) && (pts[1]->y == pts[2]->y))
+        return TOUCH;
+
+// otherwise, the middle points are the intesections
+      second = *pts[2];
+      return OVERLAP;
   }
 
   double offset = denom < 0 ? - denom / 2 : denom / 2;
@@ -233,8 +252,64 @@ gde::geom::algorithm::compute_intesection_v2(const gde::geom::core::line_segment
                                              gde::geom::core::point& first,
                                              gde::geom::core::point& second)
 {
+  double a = (s2.p1.x - s1.p1.x) * (s1.p2.y - s1.p1.y) - (s2.p1.y - s1.p1.y) * (s1.p2.x - s1.p1.x);
+  double b = (s2.p2.x - s1.p1.x) * (s1.p2.y - s1.p1.y) - (s2.p2.y - s1.p1.y) * (s1.p2.x - s1.p1.x);
 
-  return DISJOINT;
+// if the endpoints of the second segment lie on the opposite
+  if((a != 0.0) && (b != 0.0) && same_signs(a, b))
+    return DISJOINT;
+
+  double c = (s1.p1.x - s2.p1.x) * (s2.p2.y - s2.p1.y) - (s1.p1.y - s2.p1.y) * (s2.p2.x - s2.p1.x);
+  double d = (s1.p2.x - s2.p1.x) * (s2.p2.y - s2.p1.y) - (s1.p2.y - s2.p1.y) * (s2.p2.x - s2.p1.x);
+
+// if the endpoints of the first segment lie on the opposite
+  if((c != 0.0) && (d != 0.0) && same_signs(c, d))
+    return DISJOINT;
+
+
+  double det = a - b;
+// are the segments collinear?
+  if(det == 0.0)
+  {
+    if(do_collinear_segments_intersects(s1, s2) == false)
+      return DISJOINT;
+
+// and we know they intersects: let's order the segments and find out intersection(s)
+    const gde::geom::core::point* pts[4];
+    pts[0] = &s1.p1;
+    pts[1] = &s1.p2;
+    pts[2] = &s2.p1;
+    pts[3] = &s2.p2;
+
+    std::sort(pts, pts + 4, point_cmp);
+
+// at least they will share one point
+    first = *pts[1];
+
+// and if segments touch in a single point they are equal
+    if((pts[1]->x == pts[2]->x) && (pts[1]->y == pts[2]->y))
+      return TOUCH;
+
+// otherwise, the middle points are the intesections
+    second = *pts[2];
+    return OVERLAP;
+  }
+
+  double tdet = -c;
+// The denominator of the parameter must be positive
+  if(det < 0)
+  {
+    det = -det;
+    tdet = -tdet;
+  }
+
+// compute intersection point
+  double alpha = tdet / det;
+
+  first.x = s1.p1.x + alpha * (s1.p2.x - s1.p1.x);
+  first.y = s1.p1.y + alpha * (s1.p2.y - s1.p1.y);
+
+  return CROSS;
 }
 
 gde::geom::algorithm::segment_relation_type
