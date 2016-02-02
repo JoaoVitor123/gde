@@ -28,180 +28,100 @@
  */
 
 // GDE
+#include <gde/geom/core/geometric_primitives.hpp>
 #include <gde/geom/algorithm/line_segment_intersection.hpp>
 #include <gde/geom/algorithm/line_segments_intersection.hpp>
-#include <gde/geom/core/geometric_primitives.hpp>
+#include <gde/geom/algorithm/utils.hpp>
 
 // STL
 #include <cstdlib>
-
-/*
-// STL
 #include <iostream>
 
-void print(const std::vector<gde::geom::core::point>& intersections)
+void print(const std::vector<gde::geom::core::line_segment>& segments)
 {
-  for(const gde::geom::core::point& ip : intersections)
+  std::cout << std::endl;
+  
+  for(const gde::geom::core::line_segment& s : segments)
   {
-    std::cout << ip.x << ", " << ip.y << std::endl;
+    std::cout << "[(" << s.p1.x << ", " << s.p1.y
+    << "), (" << s.p2.x << ", " << s.p2.y
+    << ")]" << std::endl;
   }
 }
 
-void test1()
+void print(const std::vector<gde::geom::core::point>& pts)
 {
-  gde::geom::core::line_segment s1 = { {0, 0}, {10, 10} };
-  gde::geom::core::line_segment s2 = { {0, 10}, {10, 0} };
+  std::cout << std::endl;
   
-  std::cout << "s1 intersects s2? " << gde::geom::algorithm::do_intersects_v1(s1, s2) << std::endl;
+  for(const gde::geom::core::point& p : pts)
+  {
+    std::cout << "(" << p.x << ", "
+    << p.y << ")" << std::endl;
+  }
 }
 
-void test_lazy_intersection()
+void do_intersects_basic_test()
 {
-  std::vector<gde::geom::core::line_segment> segments = {
-    { {0, 0}, {3, 3} },
-    { {1, 3}, {2, 7} },
-    { {4, 4}, {1, 7} },
-    { {4, 5}, {7, 8} },
-    { {9, 3}, {5, 8} }
-  };
+  gde::geom::core::line_segment s1({1, 4}, {4, 4});
+  gde::geom::core::line_segment s2({1, 1}, {6, 5});
+  gde::geom::core::line_segment s3({5, 3}, {8, 2});
   
-  std::vector<gde::geom::core::point> intersections = gde::geom::algorithm::lazy_intersection(segments);
+  gde::geom::core::line_segment s4({1, 1}, {4, 4});
+  gde::geom::core::line_segment s5({2, 2}, {6, 6});
+  gde::geom::core::line_segment s6({6, 6}, {8, 9});
   
-  print(intersections);
+  gde::geom::core::line_segment s7({4, 3}, {8, 6});
+  gde::geom::core::line_segment s8({7, 2}, {1, 6});
+  
+  
+  bool result = gde::geom::algorithm::do_intersects_v1(s1, s2);
+  result = gde::geom::algorithm::do_intersects_v1(s2, s1);
+  
+  result = gde::geom::algorithm::do_intersects_v1(s1, s3);
+  result = gde::geom::algorithm::do_intersects_v1(s3, s1);
+  
+  result = gde::geom::algorithm::do_intersects_v1(s2, s3);
+  result = gde::geom::algorithm::do_intersects_v1(s3, s2);
+  
+  result = gde::geom::algorithm::do_intersects_v2(s1, s2);
+  result = gde::geom::algorithm::do_intersects_v2(s2, s1);
+  
+  result = gde::geom::algorithm::do_intersects_v2(s1, s3);
+  result = gde::geom::algorithm::do_intersects_v2(s3, s1);
+  
+  result = gde::geom::algorithm::do_intersects_v2(s2, s3);
+  result = gde::geom::algorithm::do_intersects_v2(s3, s2);
+  
+  result = gde::geom::algorithm::do_intersects_v3(s1, s2);
+  result = gde::geom::algorithm::do_intersects_v3(s2, s1);
+  
+  result = gde::geom::algorithm::do_intersects_v3(s1, s3);
+  result = gde::geom::algorithm::do_intersects_v3(s3, s1);
+  
+  result = gde::geom::algorithm::do_intersects_v3(s2, s3);
+  result = gde::geom::algorithm::do_intersects_v3(s3, s2);
+  
+  result = gde::geom::algorithm::do_intersects_v3(s4, s5);
+  std::cout << result << std::endl;
+  result = gde::geom::algorithm::do_intersects_v3(s5, s4);
+  std::cout << result << std::endl;
+  
+  result = gde::geom::algorithm::do_intersects_v3(s6, s5);
+  std::cout << result << std::endl;
+  result = gde::geom::algorithm::do_intersects_v3(s5, s6);
+  std::cout << result << std::endl;
+  
+  result = gde::geom::algorithm::do_intersects_v3(s7, s8);
+  std::cout << result << std::endl;
+  result = gde::geom::algorithm::do_intersects_v3(s8, s7);
+  std::cout << result << std::endl;
+  
+  return;
 }
 
 int main(int argc, char* argv[])
 {
-  test1();
-
-  test_lazy_intersection();
-
-
-  return EXIT_SUCCESS;
-}
-
-
-#include <chrono>
-#include <exception>
-#include <future>
-#include <iostream>
-#include <random>
-#include <sstream>
-#include <string>
-#include <thread>
-
-int do_something(char c)
-{
-  std::stringstream s;
-  
-  s << "TID: " << std::this_thread::get_id();
-  
-  std::cout << s.str() << std::endl;
-
-  std::default_random_engine dre(c);
-  
-  std::uniform_int_distribution<int> id(10, 1000);
-  
-  for(int i = 0; i < 10; ++i)
-  {
-    int v = id(dre);
-    std::this_thread::sleep_for(std::chrono::milliseconds(v));
-    
-    std::cout.put(c).flush();
-  }
-  
-  return c;
-}
-
-
-int func1()
-{
-  return do_something('.');
-}
-
-int func2()
-{
-  return do_something('+');
-}
-
-struct func3
-{
-  void operator()()
-  {
-    do_something('*');
-    throw std::string("teste");
-  }
-};
-
-int teste_future_async(int argc, char* argv[])
-{
-  try {
-// chama func1 de forma assincrona
-  std::future<int> result1(std::async(func1));
-
-// chama func3 de forma assincrona
-  std::future<void> result3(std::async(func3()));
-  
-// chama do_something de forma assincrona
-  std::future<void> result4(std::async([]{ do_something('&');}));
-
-  
-// chama func2 de forma sincrona
-  int result2 = func2();
-  
-// aguarda func1 terminar, soma e imprime o resultado
-  int result = result1.get() + result2;
-  result3.wait();
-  result4.get();
-
-  std::cout << "\nResultado: " << result << std::endl;
-  }
-  catch(...)
-  {
-    std::cout << "pulou fora" << std::endl;
-  }
-
-  return EXIT_SUCCESS;
-}
-
-int teste_thread(int argc, char* argv[])
-{
-  //std::thread t(do_something, 'c');
-  
-  std::thread t([]{ while(true) { std::cout << "." << std::endl; } });
-  
-  while(true);
-  
-  
-  return EXIT_SUCCESS;
-}
-
-int main(int argc, char* argv[])
-{
-  //teste_future_async(argc, argv);
-  teste_thread(argc, argv);
- 
-  return EXIT_SUCCESS;
-}
-*/
-
-// test 1
-void test1(std::vector<gde::geom::core::line_segment> segments)
-{
-   clock_t Ticks[2];
-   Ticks[0] = clock();
-   gde::geom::algorithm::x_order_intersection(segments);
-   Ticks[1] = clock();
-   double Tempo = (Ticks[1] - Ticks[0]) * 1.0 / CLOCKS_PER_SEC;
-   //std::cout << "\n\n" << Tempo << "   X_Ordering" << "\n";
-}
-
-int main(int argc, char* argv[])
-{
- std::vector<gde::geom::core::line_segment> segments;
-
-  //segments = gen_segments(2000,20,0,1000,0);
-  //test1(segments);
+  do_intersects_basic_test();
 
   return EXIT_SUCCESS;
 }

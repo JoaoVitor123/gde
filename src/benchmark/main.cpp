@@ -30,276 +30,220 @@
 #include <gde/geom/algorithm/utils.hpp>
 
 // STL
-#include <iostream>
+#include <chrono>
+#include <cstdlib>
+#include <ctime>
 #include <iomanip>
-#include <time.h>
-#include <map>
+#include <iostream>
+#include <string>
 
-void print(const std::vector<gde::geom::core::line_segment>& segments)
+struct benchmark_t
 {
-  std::cout << std::endl;
+  std::string algorithm_name;                   // algorithm name
+  std::size_t num_segments;                     // number of segments
+  std::size_t num_intersections;                // number of intersections
+  std::chrono::duration<double> elapsed_time;  // miliseconds
+};
 
-  for(const gde::geom::core::line_segment& s : segments)
+void print(const std::vector<benchmark_t>& results)
+{
+  for(const benchmark_t& result : results)
   {
-    std::cout << "[(" << s.p1.x << ", " << s.p1.y
-              << "), (" << s.p2.x << ", " << s.p2.y
-              << ")]" << std::endl;
+    std::cout << std::setprecision(18)
+              << result.algorithm_name << ";" << result.num_segments << ";"
+              << result.num_intersections << ";" << result.elapsed_time.count() / 5.0 << std::endl;
   }
 }
 
 
-void print(const std::vector<gde::geom::core::point>& pts)
+std::vector<gde::geom::core::point>
+lazy_intersection_v1(const std::vector<gde::geom::core::line_segment>& segments)
 {
-  std::cout << std::endl;
-
-  for(const gde::geom::core::point& p : pts)
+  std::vector<gde::geom::core::point> result;
+  gde::geom::core::point ip1;
+  gde::geom::core::point ip2;
+  
+  const std::size_t number_of_segments = segments.size();
+  
+  for(std::size_t i = 0; i < (number_of_segments - 1); ++i)
   {
-    std::cout << "(" << p.x << ", "
-              << p.y << ")" << std::endl;
-  }
-}
-
-void test1()
-{
-  gde::geom::core::line_segment s1({1, 4}, {4, 4});
-  gde::geom::core::line_segment s2({1, 1}, {6, 5});
-  gde::geom::core::line_segment s3({5, 3}, {8, 2});
-
-  gde::geom::core::line_segment s4({1, 1}, {4, 4});
-  gde::geom::core::line_segment s5({2, 2}, {6, 6});
-  gde::geom::core::line_segment s6({6, 6}, {8, 9});
-
-  gde::geom::core::line_segment s7({4, 3}, {8, 6});
-  gde::geom::core::line_segment s8({7, 2}, {1, 6});
-
-
-  bool result = gde::geom::algorithm::do_intersects_v1(s1, s2);
-  result = gde::geom::algorithm::do_intersects_v1(s2, s1);
-
-  result = gde::geom::algorithm::do_intersects_v1(s1, s3);
-  result = gde::geom::algorithm::do_intersects_v1(s3, s1);
-
-  result = gde::geom::algorithm::do_intersects_v1(s2, s3);
-  result = gde::geom::algorithm::do_intersects_v1(s3, s2);
-
-  result = gde::geom::algorithm::do_intersects_v2(s1, s2);
-  result = gde::geom::algorithm::do_intersects_v2(s2, s1);
-
-  result = gde::geom::algorithm::do_intersects_v2(s1, s3);
-  result = gde::geom::algorithm::do_intersects_v2(s3, s1);
-
-  result = gde::geom::algorithm::do_intersects_v2(s2, s3);
-  result = gde::geom::algorithm::do_intersects_v2(s3, s2);
-
-  result = gde::geom::algorithm::do_intersects_v3(s1, s2);
-  result = gde::geom::algorithm::do_intersects_v3(s2, s1);
-
-  result = gde::geom::algorithm::do_intersects_v3(s1, s3);
-  result = gde::geom::algorithm::do_intersects_v3(s3, s1);
-
-  result = gde::geom::algorithm::do_intersects_v3(s2, s3);
-  result = gde::geom::algorithm::do_intersects_v3(s3, s2);
-
-  result = gde::geom::algorithm::do_intersects_v3(s4, s5);
-  std::cout << result << std::endl;
-  result = gde::geom::algorithm::do_intersects_v3(s5, s4);
-  std::cout << result << std::endl;
-
-  result = gde::geom::algorithm::do_intersects_v3(s6, s5);
-  std::cout << result << std::endl;
-  result = gde::geom::algorithm::do_intersects_v3(s5, s6);
-  std::cout << result << std::endl;
-
-  result = gde::geom::algorithm::do_intersects_v3(s7, s8);
-  std::cout << result << std::endl;
-  result = gde::geom::algorithm::do_intersects_v3(s8, s7);
-  std::cout << result << std::endl;
-
-
-  return;
-}
-
-double closest_number(double n,double N)
-{
-
-  return (N+n)/2;
-}
-
-void tili()
-{
-  std::vector<gde::geom::core::line_segment> segments = gen_segments(50,
-                                                                     std::make_pair(-180.0, 180.0),
-                                                                     std::make_pair(-90.0, 90.0),
-                                                                     20.0, 40.0);//*/
-  double range_x = 0, range_y = 0;
-  int cont_x = 0, cont_y = 0;
-
-  std::vector<gde::geom::core::line_segment> matrix[(360/40)+1][(180/40)+1];
-  //std::cout << (360/40)+1 << "   " << (180/40)+1 << std::endl;
-  for(int i = 0; i < (segments.size() - 1); ++i)
-  {
-    range_x = closest_number(segments[i].p1.x,segments[i].p2.x);
-    range_y = closest_number(segments[i].p1.y,segments[i].p2.y);
-   // std::cout << "rx:  " << range_x <<"  ry  " << range_y << "\n";
-    for(int j = -140; j <= 220; j += 80) // 180 + 40
+    const gde::geom::core::line_segment& red = segments[i];
+    
+    for(std::size_t j = i + 1; j < number_of_segments; ++j)
     {
-      if (range_x < j)
-      {
-        for(int w = -50; w <= 130; w += 80) // 90 + 40
-        {
-          if(range_y < w)
-          {
-            matrix[cont_x][cont_y].push_back(segments[i]);//*
-            cont_y = 0;
-            if(range_x > ((j+j) - 20) && j < 200)
-            {
-              matrix[cont_x+1][cont_y].push_back(segments[i]);
-            }
-            if(range_y > ((w+w) - 20) && w < 150)
-            {
-              matrix[cont_x][cont_y+1].push_back(segments[i]);
-            }
-            if(range_x < (j + 20) && j > 80 && cont_x > 0)
-            {
-              matrix[cont_x-1][cont_y].push_back(segments[i]);
-            }
-            if(range_y < ( w + 20) && w > 80  && cont_y > 0)
-            {
-              matrix[cont_x][cont_y-1].push_back(segments[i]);
-            }
-            if(range_x > ((j+j) - 20) && j < 200 && range_y > ((w+w) - 20) && w < 150)
-            {
-              matrix[cont_x+1][cont_y +1].push_back(segments[i]);
-            }
-            if(range_y > ((w+w) - 20) && w < 150 && range_x < (j + 20) && j > 80 && cont_x > 0)
-            {
-              matrix[cont_x-1][cont_y+1].push_back(segments[i]);
-            }
-            if(range_x < (j + 20) && j > 80 && cont_x > 0 && range_y < ( w + 20) && w > 80  && cont_y > 0)
-            {
-              matrix[cont_x-1][cont_y -1].push_back(segments[i]);
-            }
-            if(range_x < (j + 20) && j > 80 && cont_x > 0 && range_y > ((w+w) - 20) && w < 150)
-            {
-              matrix[cont_x-1][cont_y+1].push_back(segments[i]);
-            }
-            break;
-          }
-          else
-          {
-            ++cont_y;
-            continue;
-          }
-        }
-          cont_x = 0;
-          break;
-      }
-      else
-      {
-        ++cont_x;
+      const gde::geom::core::line_segment& blue = segments[j];
+      
+      if(!gde::geom::algorithm::do_bounding_box_intersects(red, blue))
         continue;
-      }
+      
+      gde::geom::algorithm::segment_relation_type spatial_relation = gde::geom::algorithm::compute_intesection_v1(red, blue, ip1, ip2);
+      
+      if(spatial_relation == gde::geom::algorithm::DISJOINT)
+        continue;
+      
+      result.push_back(ip1);
+      
+      if(spatial_relation == gde::geom::algorithm::OVERLAP)
+        result.push_back(ip2);
     }
   }
+  
+  return std::move(result);
+}
 
-  for(int j = 0; j < 10; ++j)
+std::vector<gde::geom::core::point>
+lazy_intersection_v2(const std::vector<gde::geom::core::line_segment>& segments)
+{
+  std::vector<gde::geom::core::point> result;
+  gde::geom::core::point ip1;
+  gde::geom::core::point ip2;
+  
+  const std::size_t number_of_segments = segments.size();
+  
+  for(std::size_t i = 0; i < (number_of_segments - 1); ++i)
   {
-    for(int w = 0; w < 5; ++w)
+    const gde::geom::core::line_segment& red = segments[i];
+    
+    for(std::size_t j = i + 1; j < number_of_segments; ++j)
     {
-      std::vector<gde::geom::core::line_segment> seg = matrix[j][w];
-      if(seg.size() > 1)
-      {
-        std::vector<gde::geom::core::point> ips1 = gde::geom::algorithm::x_order_intersection(seg);
-        print(ips1);
-      }
+      const gde::geom::core::line_segment& blue = segments[j];
+      
+      if(!gde::geom::algorithm::do_bounding_box_intersects(red, blue))
+        continue;
+      
+      gde::geom::algorithm::segment_relation_type spatial_relation = gde::geom::algorithm::compute_intesection_v2(red, blue, ip1, ip2);
+      
+      if(spatial_relation == gde::geom::algorithm::DISJOINT)
+        continue;
+      
+      result.push_back(ip1);
+      
+      if(spatial_relation == gde::geom::algorithm::OVERLAP)
+        result.push_back(ip2);
     }
   }
+  
+  return std::move(result);
 }
 
-
-void test2()
+std::vector<gde::geom::core::point>
+lazy_intersection_v3(const std::vector<gde::geom::core::line_segment>& segments)
 {
-  std::vector<gde::geom::core::line_segment> segments = gen_segments(60,
-                                                                     std::make_pair(-180.0, 180.0),
-                                                                     std::make_pair(-90.0, 90.0),
-                                                                     20.0, 40.0);
- //print(segments);
-
-  std::vector<gde::geom::core::point> ips1 = gde::geom::algorithm::x_order_intersection(segments);
-
-  std::sort(ips1.begin(), ips1.end(), gde::geom::algorithm::point_xy_cmp());
-  print(ips1);
-
-  std::vector<gde::geom::core::point> ips2 = gde::geom::algorithm::lazy_intersection(segments);
-
-  std::sort(ips2.begin(), ips2.end(), gde::geom::algorithm::point_xy_cmp());
-  std::cout <<"lazy";
-  print(ips2);
-
-  std::cout << "ips1 == ips2 ? " << (ips1 == ips2) << std::endl;
-  std::cout << "ips1 = "<< ips1.size() << "  ips2 = " << ips2.size() << std::endl;
-
-  typedef std::vector<gde::geom::core::point>::iterator intersection_point_it;
-
-  std::pair<intersection_point_it, intersection_point_it> diffs = std::mismatch(ips1.begin(), ips1.end(), ips2.begin());
-
-  std::cout << std::setprecision(18) << "v1 = " << diffs.first->x << "\tv2 = " << diffs.second->x << std::endl;
-  std::cout << std::setprecision(18) << "v1 = " << diffs.first->y << "\tv2 = " << diffs.second->y << std::endl;
+  std::vector<gde::geom::core::point> result;
+  gde::geom::core::point ip1;
+  gde::geom::core::point ip2;
+  
+  const std::size_t number_of_segments = segments.size();
+  
+  for(std::size_t i = 0; i < (number_of_segments - 1); ++i)
+  {
+    const gde::geom::core::line_segment& red = segments[i];
+    
+    for(std::size_t j = i + 1; j < number_of_segments; ++j)
+    {
+      const gde::geom::core::line_segment& blue = segments[j];
+      
+      if(!gde::geom::algorithm::do_bounding_box_intersects(red, blue))
+        continue;
+      
+      gde::geom::algorithm::segment_relation_type spatial_relation = gde::geom::algorithm::compute_intesection_v3(red, blue, ip1, ip2);
+      
+      if(spatial_relation == gde::geom::algorithm::DISJOINT)
+        continue;
+      
+      result.push_back(ip1);
+      
+      if(spatial_relation == gde::geom::algorithm::OVERLAP)
+        result.push_back(ip2);
+    }
+  }
+  
+  return std::move(result);
 }
 
-void test3()
+void do_tests()
 {
-  std::vector<gde::geom::core::line_segment> segments = gen_segments(1000,
-                                                                     std::make_pair(-180.0, 180.0),
-                                                                     std::make_pair(-90.0, 90.0),
-                                                                     20.0, 40.0);
+  std::vector<benchmark_t> results;
 
-  gde::geom::core::point p1, p2;
-
-  clock_t Ticks[2];
-  Ticks[0] = clock();
-  for(int i = 0; i < segments.size(); ++i )
+  for(std::size_t num_segments = 2; num_segments <= 16; num_segments *= 2)
   {
-    for(int j = 0; j < segments.size(); ++j )
-      gde::geom::algorithm::compute_intesection_v3(segments[i], segments[j],p1, p2);
+    double min_length = 180.0;
+    double max_length = 360.0;
+    
+    std::vector<gde::geom::core::line_segment> segments = gen_segments(num_segments,
+                                                                       std::make_pair(-180.0, 180.0),
+                                                                       std::make_pair(-90.0, 90.0),
+                                                                       min_length, max_length);
+    
+    {
+      benchmark_t result;
+      result.algorithm_name = "v1";
+      result.num_segments = num_segments;
+      
+      std::chrono::time_point<std::chrono::system_clock> start, end;
+      
+      start = std::chrono::system_clock::now();
+      
+      std::size_t nips = 0;
+      
+      for(std::size_t i = 0; i < 5; ++i)
+      {
+        std::vector<gde::geom::core::point> ips = lazy_intersection_v1(segments);
+        nips = ips.size();
+      }
+      
+      end = std::chrono::system_clock::now();
+      
+      result.num_intersections = nips;
+      result.elapsed_time = end - start;
+
+      results.push_back(result);
+    }
+    
+    {
+      benchmark_t result;
+      result.algorithm_name = "v2";
+      result.num_segments = num_segments;
+      
+      std::chrono::time_point<std::chrono::system_clock> start, end;
+      
+      start = std::chrono::system_clock::now();
+      std::vector<gde::geom::core::point> ips = lazy_intersection_v2(segments);
+      end = std::chrono::system_clock::now();
+      
+      result.elapsed_time = end - start;
+      
+      result.num_intersections = ips.size();
+      
+      results.push_back(result);
+    }
+    
+    {
+      benchmark_t result;
+      result.algorithm_name = "v3";
+      result.num_segments = num_segments;
+      
+      std::chrono::time_point<std::chrono::system_clock> start, end;
+      
+      start = std::chrono::system_clock::now();
+      std::vector<gde::geom::core::point> ips = lazy_intersection_v3(segments);
+      end = std::chrono::system_clock::now();
+      
+      result.elapsed_time = end - start;
+      
+      result.num_intersections = ips.size();
+      
+      results.push_back(result);
+      
+    }
   }
-  Ticks[1] = clock();
-  double Tempo = (Ticks[1] - Ticks[0]) * 1.0 / CLOCKS_PER_SEC;
-  std::cout << "\n" << Tempo << "   intersects_v3" << "\n";
-
-
-  //clock_t Ticks[2];
-  Ticks[0] = clock();
-  for(int i = 0; i < segments.size(); ++i )
-  {
-    for(int j = 0; j < segments.size(); ++j )
-      gde::geom::algorithm::compute_intesection_v2(segments[i], segments[j],p1, p2);
-  }
-  Ticks[1] = clock();
-  Tempo = (Ticks[1] - Ticks[0]) * 1.0 / CLOCKS_PER_SEC;
-  std::cout << "\n" << Tempo << "   intersects_v2" << "\n";
-
-
-  //clock_t Ticks[2];
-  Ticks[0] = clock();
-  for(int i = 0; i < segments.size(); ++i )
-  {
-    for(int j = 0; j < segments.size(); ++j )
-      gde::geom::algorithm::compute_intesection_v1(segments[i], segments[j],p1, p2);
-  }
-  Ticks[1] = clock();
-  Tempo = (Ticks[1] - Ticks[0]) * 1.0 / CLOCKS_PER_SEC;
-  std::cout << "\n" << Tempo << "   intersects_v1" << "\n";
-
+  
+  print(results);
 }
-
 
 int main(int argc, char* argv[])
 {
-  //test1();
- //test2();
-  test3();
- // tili();
-
+  do_tests();
+  
   return EXIT_SUCCESS;
 }
