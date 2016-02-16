@@ -108,6 +108,19 @@ namespace gde
       //x_order_intersection(gde::geom::core::line_string& red_line,
       //                     gde::geom::core::line_segment& blue_line);
 
+      /*!
+        \brief Given a set of segments compute the intersection points between each pair.
+
+        This algorithm separates all the segments into blocks according to their y-coordinate , and then ,
+        using an x -order algorithm to find the intersection points
+        between segments of each block.
+
+        \note ????.
+       */
+      std::vector<gde::geom::core::point>
+      tiling_intersection(const std::vector<gde::geom::core::line_segment>& segments,
+                          const double& max_length, const double& max_range, const double& min_range);
+
     } // end namespace algorithm
   }   // end namespace geom
 }     // end namespace gde

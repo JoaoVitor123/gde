@@ -165,7 +165,7 @@ void do_tests()
 {
   std::vector<benchmark_t> results;
 
-  for(std::size_t num_segments = 2; num_segments <= 16; num_segments *= 2)
+  for(std::size_t num_segments = 2; num_segments <= 32768; num_segments *= 2)
   {
     double min_length = 180.0;
     double max_length = 360.0;
@@ -208,12 +208,19 @@ void do_tests()
       std::chrono::time_point<std::chrono::system_clock> start, end;
       
       start = std::chrono::system_clock::now();
-      std::vector<gde::geom::core::point> ips = lazy_intersection_v2(segments);
+
+      std::size_t nips = 0;
+
+      for(std::size_t i = 0; i < 5; ++i)
+      {
+        std::vector<gde::geom::core::point> ips = lazy_intersection_v2(segments);
+        nips = ips.size();
+      }
+
       end = std::chrono::system_clock::now();
       
-      result.elapsed_time = end - start;
-      
-      result.num_intersections = ips.size();
+      result.elapsed_time = end - start;      
+      result.num_intersections = nips;
       
       results.push_back(result);
     }
@@ -226,12 +233,18 @@ void do_tests()
       std::chrono::time_point<std::chrono::system_clock> start, end;
       
       start = std::chrono::system_clock::now();
-      std::vector<gde::geom::core::point> ips = lazy_intersection_v3(segments);
+
+      std::size_t nips = 0;
+
+      for(std::size_t i = 0; i < 5; ++i)
+      {
+        std::vector<gde::geom::core::point> ips = lazy_intersection_v3(segments);
+        nips = ips.size();
+      }
       end = std::chrono::system_clock::now();
       
       result.elapsed_time = end - start;
-      
-      result.num_intersections = ips.size();
+      result.num_intersections = nips;
       
       results.push_back(result);
       
@@ -241,9 +254,22 @@ void do_tests()
   print(results);
 }
 
+void do_tests2()
+{
+  double min_length = 30.0;
+  double max_length = 45.0;
+  std::vector<gde::geom::core::line_segment> segments = gen_segments(100,
+                                                                     std::make_pair(-180.0, 180.0),
+                                                                     std::make_pair(-90.0, 90.0),
+                                                                     min_length, max_length);
+
+  gde::geom::algorithm::tiling_intersection(segments, max_length, 90.0, -90.0);
+}
+
 int main(int argc, char* argv[])
 {
-  do_tests();
+  //do_tests();
+  do_tests2();
   
   return EXIT_SUCCESS;
 }
