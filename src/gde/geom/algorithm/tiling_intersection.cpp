@@ -32,22 +32,17 @@
 #include "line_segment_intersection.hpp"
 #include "utils.hpp"
 
-
 // STL
 #include <algorithm>
-#include <iostream>
-#include <string>
 #include <thread>
-#include <pthread.h>
-
 
 std::vector<gde::geom::core::point>
 gde::geom::algorithm::tiling_intersection(const std::vector<gde::geom::core::line_segment>& segments,
                                           const double& max_length, const double& max_range, const double& min_range)
 {
-  int range = 4;
+  const int range = 4;
   std::vector<gde::geom::core::point> ipts;
-  std::vector<gde::geom::core::line_segment> segments_range[range];
+  std::vector<gde::geom::core::line_segment> segments_range[4];
   double t_max;
   double block;
 
@@ -78,22 +73,23 @@ gde::geom::algorithm::tiling_intersection(const std::vector<gde::geom::core::lin
         segments_range[cont].push_back(segments[i]);
 
 // checks if one of the points of this segment this the top of this block
-        if(segments[i].p1.y > y || segments[i].p2.y > y &&
-           y < t_max)
+        if((segments[i].p1.y > y) || (segments[i].p2.y > y) && (y < t_max))
           segments_range[cont+1].push_back(segments[i]);
         break;
       }
       cont++;
     }
   }
+
 // x-ordering
-int size = 0;
+  int size = 0;
+
   for(auto& elemento: segments_range)
   {
     ipts = gde::geom::algorithm::x_order_intersection(elemento, block,(block-block_size));
     block += block_size;
     size += ipts.size();
   }
-  std::cout << size << "  tile \n\n";
+
   return ipts;
 }
