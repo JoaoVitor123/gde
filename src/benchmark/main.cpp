@@ -24,7 +24,7 @@
 #include "gen_random_data.hpp"
 
 // GDE
-#include <gde/geom/core/geometric_primitives.hpp>
+//#include <gde/geom/core/geometric_primitives.hpp>
 #include <gde/geom/algorithm/line_segment_intersection.hpp>
 #include <gde/geom/algorithm/line_segments_intersection.hpp>
 #include <gde/geom/algorithm/utils.hpp>
@@ -258,12 +258,43 @@ void do_tests2()
 {
   double min_length = 30.0;
   double max_length = 45.0;
-  std::vector<gde::geom::core::line_segment> segments = gen_segments(100,
+  std::vector<gde::geom::core::line_segment> segments = gen_segments(5000,
                                                                      std::make_pair(-180.0, 180.0),
                                                                      std::make_pair(-90.0, 90.0),
                                                                      min_length, max_length);
 
+  std::chrono::time_point<std::chrono::system_clock> start, end;
+  start = std::chrono::system_clock::now();
   gde::geom::algorithm::tiling_intersection(segments, max_length, 90.0, -90.0);
+  end = std::chrono::system_clock::now();
+  std::chrono::duration<double> time = end - start;
+  std::cout << time.count() << "  tile  \n\n\n";
+
+
+  std::chrono::time_point<std::chrono::system_clock> start2, end2;
+  start2 = std::chrono::system_clock::now();
+  std::vector<gde::geom::core::point> segments2 = gde::geom::algorithm::x_order_intersection(segments);
+  end2 = std::chrono::system_clock::now();
+  time = end2 - start2;
+  std::cout << time.count() << "  X \n\n";
+  std::cout << segments2.size() << "  x  \n\n\n";
+
+/*
+  std::chrono::time_point<std::chrono::system_clock> start3, end3;
+  start3 = std::chrono::system_clock::now();
+  gde::geom::algorithm::uniform_grid_intersection(segments, max_length, 90.0, -90.0, 180.0, -180.0);
+  end3 = std::chrono::system_clock::now();
+  time = end3 - start3;
+  std::cout << time.count() << "  grid \n\n\n";
+  */
+
+
+
+
+ // for(int i = 0; i < segments2.size(); ++i)
+   // std::cout << segments2[i].y << "     X   \n";
+
+
 }
 
 int main(int argc, char* argv[])
