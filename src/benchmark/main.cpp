@@ -1,3 +1,4 @@
+
 /*
   Copyright (C) 2015 National Institute For Space Research (INPE) - Brazil.
   This file is part of Geospatial Database Explorer (GDE) - a free and open source GIS.
@@ -24,7 +25,7 @@
 #include "gen_random_data.hpp"
 
 // GDE
-//#include <gde/geom/core/geometric_primitives.hpp>
+#include <gde/geom/core/geometric_primitives.hpp>
 #include <gde/geom/algorithm/line_segment_intersection.hpp>
 #include <gde/geom/algorithm/line_segments_intersection.hpp>
 #include <gde/geom/algorithm/utils.hpp>
@@ -279,20 +280,6 @@ void do_tests2()
   std::cout << time.count() << "  X \n\n";
   std::cout << segments2.size() << "  x  \n\n\n";
 
-/*
-  std::chrono::time_point<std::chrono::system_clock> start3, end3;
-  start3 = std::chrono::system_clock::now();
-  gde::geom::algorithm::uniform_grid_intersection(segments, max_length, 90.0, -90.0, 180.0, -180.0);
-  end3 = std::chrono::system_clock::now();
-  time = end3 - start3;
-  std::cout << time.count() << "  grid \n\n\n";
-  */
-
-
-
-
- // for(int i = 0; i < segments2.size(); ++i)
-   // std::cout << segments2[i].y << "     X   \n";
 
 
 }
