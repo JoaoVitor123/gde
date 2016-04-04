@@ -89,7 +89,7 @@ lazy_intersection_v1(const std::vector<gde::geom::core::line_segment>& segments)
     }
   }
   
-  return std::move(result);
+  return result;
 }
 
 std::vector<gde::geom::core::point>
@@ -124,7 +124,7 @@ lazy_intersection_v2(const std::vector<gde::geom::core::line_segment>& segments)
     }
   }
   
-  return std::move(result);
+  return result;
 }
 
 std::vector<gde::geom::core::point>
@@ -159,7 +159,7 @@ lazy_intersection_v3(const std::vector<gde::geom::core::line_segment>& segments)
     }
   }
   
-  return std::move(result);
+  return result;
 }
 
 void do_tests()

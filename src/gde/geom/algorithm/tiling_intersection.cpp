@@ -38,14 +38,13 @@
 #include <iostream>
 #include <string>
 #include <thread>
-#include <pthread.h>
 
+static const int range = 4;
 
 std::vector<gde::geom::core::point>
 gde::geom::algorithm::tiling_intersection(const std::vector<gde::geom::core::line_segment>& segments,
                                           const double& max_length, const double& max_range, const double& min_range)
 {
-  int range = 4;
   std::vector<gde::geom::core::point> ipts;
   std::vector<gde::geom::core::line_segment> segments_range[range];
   double t_max;
@@ -78,7 +77,7 @@ gde::geom::algorithm::tiling_intersection(const std::vector<gde::geom::core::lin
         segments_range[cont].push_back(segments[i]);
 
 // checks if one of the points of this segment this the top of this block
-        if(segments[i].p1.y > y || segments[i].p2.y > y &&
+        if((segments[i].p1.y > y || segments[i].p2.y > y) &&
            y < t_max)
           segments_range[cont+1].push_back(segments[i]);
         break;

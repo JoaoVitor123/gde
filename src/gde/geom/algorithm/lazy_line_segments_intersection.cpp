@@ -63,5 +63,5 @@ gde::geom::algorithm::lazy_intersection(const std::vector<gde::geom::core::line_
     }
   }
 
-  return std::move(result);
+  return result;
 }
