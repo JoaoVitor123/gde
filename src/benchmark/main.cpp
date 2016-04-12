@@ -259,14 +259,16 @@ void do_tests2()
 {
   double min_length = 30.0;
   double max_length = 45.0;
-  std::vector<gde::geom::core::line_segment> segments = gen_segments(5000,
+  double min_y = -180.0;
+  double max_y = 180.0;
+  std::vector<gde::geom::core::line_segment> segments = gen_segments(20000,
                                                                      std::make_pair(-180.0, 180.0),
-                                                                     std::make_pair(-90.0, 90.0),
+                                                                     std::make_pair(min_y, max_y),
                                                                      min_length, max_length);
 
   std::chrono::time_point<std::chrono::system_clock> start, end;
   start = std::chrono::system_clock::now();
-  gde::geom::algorithm::tiling_intersection(segments, max_length, 90.0, -90.0);
+  gde::geom::algorithm::tiling_intersection(segments, max_length, max_y, min_y);
   end = std::chrono::system_clock::now();
   std::chrono::duration<double> time = end - start;
   std::cout << time.count() << "  tile  \n\n\n";
