@@ -255,34 +255,126 @@ void do_tests()
   print(results);
 }
 
+std::size_t
+tiling_intersection_sequential(const std::vector<gde::geom::core::line_segment>& segments,
+                                          const double& max_length, const double& max_range, const double& min_range)
+{
+
+  // defines scope of the blocks
+  int range = (gde::geom::algorithm::return_positive_value(min_range) / max_length) + 2;
+
+  std::vector<gde::geom::core::point> ipts;
+  std::vector<gde::geom::core::line_segment> segments_range[range];
+  double t_max;
+  double block;
+
+  t_max = max_range + gde::geom::algorithm::return_positive_value(min_range);
+
+// size of the blocks
+  double block_size = t_max/range;
+
+// current block
+  block = min_range + block_size;
+
+// through all segments
+  for(int i = 0;i < segments.size(); ++i)
+  {
+    int cont = 0;
+// through every division blocks in Y
+    for(int y = block; y <= t_max; y += block_size)
+    {
+
+// checks whether the segment y value is within block
+      if(segments[i].p1.y < y || segments[i].p2.y < y)
+      {
+
+// adds the segment in its corresponding block
+        segments_range[cont].push_back(segments[i]);
+
+// ferifica if the segment is more than two blocks
+//        if(segments[i].p1.y > y + block_size || segments[i].p2.y > y + block_size &&
+//           y < t_max)
+//            continue;
+
+// checks if one of the points of this segment this the top of this block
+        if((segments[i].p1.y > y || segments[i].p2.y > y) &&
+           y < t_max)
+          segments_range[cont+1].push_back(segments[i]);
+        break;
+      }
+      cont++;
+    }
+  }
+// x-ordering
+std::size_t size = 0;
+  for(auto& elemento: segments_range)
+  {
+    ipts = gde::geom::algorithm::x_order_intersection(elemento, block,(block-block_size));
+    block += block_size;
+    size += ipts.size();
+  }
+
+  return size;
+}
+
 void do_tests2()
 {
   double min_length = 30.0;
   double max_length = 45.0;
   double min_y = -180.0;
   double max_y = 180.0;
-  std::vector<gde::geom::core::line_segment> segments = gen_segments(20000,
-                                                                     std::make_pair(-180.0, 180.0),
-                                                                     std::make_pair(min_y, max_y),
-                                                                     min_length, max_length);
 
-  std::chrono::time_point<std::chrono::system_clock> start, end;
-  start = std::chrono::system_clock::now();
-  gde::geom::algorithm::tiling_intersection(segments, max_length, max_y, min_y);
-  end = std::chrono::system_clock::now();
-  std::chrono::duration<double> time = end - start;
-  std::cout << time.count() << "  tile  \n\n\n";
+  std::vector<benchmark_t> results;
+
+  for(std::size_t num_segments = 2; num_segments <= 32768; num_segments *= 2)
+  {
+      std::vector<gde::geom::core::line_segment> segments = gen_segments(num_segments,
+                                                                         std::make_pair(-180.0, 180.0),
+                                                                         std::make_pair(min_y, max_y),
+                                                                         min_length, max_length);
+
+      benchmark_t result;
+      std::size_t nips = 0;
+
+      result.algorithm_name = "tile ";
+      result.num_segments = num_segments;
+
+      std::chrono::time_point<std::chrono::system_clock> start, end;
+      start = std::chrono::system_clock::now();
+      for(std::size_t i = 0; i < 5; ++i)
+      {
+      nips = tiling_intersection_sequential(segments, max_length, max_y, min_y);
+      }
+      end = std::chrono::system_clock::now();
 
 
-  std::chrono::time_point<std::chrono::system_clock> start2, end2;
-  start2 = std::chrono::system_clock::now();
-  std::vector<gde::geom::core::point> segments2 = gde::geom::algorithm::x_order_intersection(segments);
-  end2 = std::chrono::system_clock::now();
-  time = end2 - start2;
-  std::cout << time.count() << "  X \n\n";
-  std::cout << segments2.size() << "  x  \n\n\n";
+      result.num_intersections = nips;
+      result.elapsed_time = end - start;
+      results.push_back(result);
 
 
+      benchmark_t result2;
+      result2.algorithm_name = "X ";
+      result2.num_segments = num_segments;
+
+      std::chrono::time_point<std::chrono::system_clock> start2, end2;
+      start2 = std::chrono::system_clock::now();
+
+      std::vector<gde::geom::core::point> segments2;
+
+      for(std::size_t i = 0; i < 5; ++i)
+      {
+        segments2 = gde::geom::algorithm::x_order_intersection(segments);
+      }
+      end2 = std::chrono::system_clock::now();
+
+      nips = segments2.size();
+      result2.num_intersections = nips;
+      result2.elapsed_time = end2 - start2;
+      results.push_back(result2);
+  }
+
+   print(results);
 
 }
 

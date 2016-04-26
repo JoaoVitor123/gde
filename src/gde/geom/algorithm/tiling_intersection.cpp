@@ -50,6 +50,7 @@ std::vector<gde::geom::core::point>
 gde::geom::algorithm::tiling_intersection(const std::vector<gde::geom::core::line_segment>& segments,
                                           const double& max_length, const double& max_range, const double& min_range)
 {
+
   // defines scope of the blocks
   int range = (gde::geom::algorithm::return_positive_value(min_range) / max_length) + 2;
 
@@ -84,9 +85,9 @@ gde::geom::algorithm::tiling_intersection(const std::vector<gde::geom::core::lin
         segments_range[cont].push_back(segments[i]);
 
 // ferifica if the segment is more than two blocks
-        if(segments[i].p1.y > y + block_size || segments[i].p2.y > y + block_size &&
-           y < t_max)
-            continue;
+//        if(segments[i].p1.y > y + block_size || segments[i].p2.y > y + block_size &&
+//           y < t_max)
+//            continue;
 
 // checks if one of the points of this segment this the top of this block
         if((segments[i].p1.y > y || segments[i].p2.y > y) &&
@@ -107,7 +108,7 @@ int size = 0;
   }
   std::cout << size << "  tile \n\n";
 
-//   std::thread t1(task1, "Hello");
-//   t1.join();
+ // std::thread t1(task1, "Hello");
+  //t1.join();
   return ipts;
 }
