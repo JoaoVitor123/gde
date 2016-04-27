@@ -336,7 +336,7 @@ void do_tests2()
       benchmark_t result;
       std::size_t nips = 0;
 
-      result.algorithm_name = "tile ";
+      result.algorithm_name = "tiling ";
       result.num_segments = num_segments;
 
       std::chrono::time_point<std::chrono::system_clock> start, end;
@@ -354,7 +354,7 @@ void do_tests2()
 
 
       benchmark_t result2;
-      result2.algorithm_name = "X ";
+      result2.algorithm_name = "X-order ";
       result2.num_segments = num_segments;
 
       std::chrono::time_point<std::chrono::system_clock> start2, end2;
@@ -372,6 +372,26 @@ void do_tests2()
       result2.num_intersections = nips;
       result2.elapsed_time = end2 - start2;
       results.push_back(result2);
+
+      benchmark_t result3;
+      result3.algorithm_name = "lazy ";
+      result3.num_segments = num_segments;
+
+      std::chrono::time_point<std::chrono::system_clock> start3, end3;
+      start3 = std::chrono::system_clock::now();
+
+      std::vector<gde::geom::core::point> segments3;
+
+      for(std::size_t i = 0; i < 5; ++i)
+      {
+        segments3 = gde::geom::algorithm::lazy_intersection(segments);
+      }
+      end3 = std::chrono::system_clock::now();
+
+      nips = segments3.size();
+      result3.num_intersections = nips;
+      result3.elapsed_time = end3 - start3;
+      results.push_back(result3);
   }
 
    print(results);
