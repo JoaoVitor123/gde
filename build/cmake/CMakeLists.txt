@@ -128,6 +128,11 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/modules")
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR (CMAKE_CXX_COMPILER MATCHES ".*clang") OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -std=c++11")
+
+  if(NOT APPLE AND UNIX AND (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER "4.7.9") AND (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.9.0"))
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+  endif()
+
 endif()
 
 # Turn on multi process compilation
@@ -156,6 +161,8 @@ include(CMakeDependentOption)
 #
 # first check of libraries
 #
+
+find_package(Threads REQUIRED)
 
 #find_package(Qt5 5.2 REQUIRED COMPONENTS Core Gui Widgets Network LinguistTools Test)
 
