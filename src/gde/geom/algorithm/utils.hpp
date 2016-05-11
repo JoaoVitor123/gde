@@ -132,6 +132,18 @@ namespace gde
       }
 
       /*!
+        \brief checks if the number is negative.
+       */
+      inline double
+      return_positive_value(const double& d)
+      {
+        if(d < 0)
+          return (d * (-1));
+        else
+          return d;
+      }
+
+      /*!
         \brief Test if the point p collinear to the end-points of segment s is inside it or not.
 
         \return True if point p is between the end-points (including both) of segment s and false, otherwise.
@@ -260,8 +272,7 @@ namespace gde
           
           return s;
         }
-      };
-
+      };      
     } // end namespace algorithm
   }   // end namespace geom
 }     // end namespace gde
