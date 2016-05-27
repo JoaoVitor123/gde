@@ -35,23 +35,37 @@
 // STL
 #include <algorithm>
 #include <thread>
+<<<<<<< HEAD
+=======
+
+void task1(std::string msg)
+{
+    std::cout << "task1 says: " << msg;
+}
+
+//static const int range = 6;
+>>>>>>> b03d785b309356607b45903423657c6ddc0bcd01
 
 std::vector<gde::geom::core::point>
 gde::geom::algorithm::tiling_intersection(const std::vector<gde::geom::core::line_segment>& segments,
                                           const double& max_length, const double& max_range, const double& min_range)
 {
+<<<<<<< HEAD
   const int range = 4;
+=======
+
+  // defines scope of the blocks
+  int range = (gde::geom::algorithm::return_positive_value(min_range) / max_length) + 2;
+
+>>>>>>> b03d785b309356607b45903423657c6ddc0bcd01
   std::vector<gde::geom::core::point> ipts;
   std::vector<gde::geom::core::line_segment> segments_range[4];
   double t_max;
   double block;
 
-  if(min_range < 0)
-  {
-    t_max = max_range + (min_range * (-1));
-  }
-  else
-    t_max = max_range + min_range;
+
+
+  t_max = max_range + gde::geom::algorithm::return_positive_value(min_range);
 
 // size of the blocks
   double block_size = t_max/range;
@@ -66,14 +80,26 @@ gde::geom::algorithm::tiling_intersection(const std::vector<gde::geom::core::lin
 // through every division blocks in Y
     for(int y = block; y <= t_max; y += block_size)
     {
+
 // checks whether the segment y value is within block
       if(segments[i].p1.y < y || segments[i].p2.y < y)
       {
+
 // adds the segment in its corresponding block
         segments_range[cont].push_back(segments[i]);
 
+// ferifica if the segment is more than two blocks
+//        if(segments[i].p1.y > y + block_size || segments[i].p2.y > y + block_size &&
+//           y < t_max)
+//            continue;
+
 // checks if one of the points of this segment this the top of this block
+<<<<<<< HEAD
         if((segments[i].p1.y > y) || (segments[i].p2.y > y) && (y < t_max))
+=======
+        if((segments[i].p1.y > y || segments[i].p2.y > y) &&
+           y < t_max)
+>>>>>>> b03d785b309356607b45903423657c6ddc0bcd01
           segments_range[cont+1].push_back(segments[i]);
         break;
       }
@@ -90,6 +116,13 @@ gde::geom::algorithm::tiling_intersection(const std::vector<gde::geom::core::lin
     block += block_size;
     size += ipts.size();
   }
+<<<<<<< HEAD
 
+=======
+  std::cout << size << "  tile \n\n";
+
+ // std::thread t1(task1, "Hello");
+  //t1.join();
+>>>>>>> b03d785b309356607b45903423657c6ddc0bcd01
   return ipts;
 }

@@ -36,6 +36,6 @@ source_group("Header Files"  FILES ${GDE_HDR_FILES})
 
 add_executable(gde_unittest_geom_algorithm ${GDE_SRC_FILES} ${GDE_HDR_FILES})
 
-target_link_libraries(gde_unittest_geom_algorithm gde_mod_geom_algorithm)
+target_link_libraries(gde_unittest_geom_algorithm gde_mod_geom_algorithm ${CMAKE_THREAD_LIBS_INIT})
 
 add_test(NAME gde_unittest_geom_algorithm COMMAND gde_unittest_geom_algorithm)
