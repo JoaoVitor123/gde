@@ -1,28 +1,34 @@
-
 /*
-  Copyright (C) 2015 National Institute For Space Research (INPE) - Brazil.
-  This file is part of Geospatial Database Explorer (GDE) - a free and open source GIS.
-  GDE is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Lesser General Public License as published by
-  the Free Software Foundation, either version 3 of the License,
-  or (at your option) any later version.
-  GDE is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU Lesser General Public License for more details.
-  You should have received a copy of the GNU Lesser General Public License
-  along with GDE. See LICENSE. If not, write to
-  GDE Team at <gde-team@dpi.inpe.br>.
-*/
+ Copyright (C) 2015 National Institute For Space Research (INPE) - Brazil.
+ 
+ This file is part of Geospatial Database Explorer (GDE) - a free and open source GIS.
+ 
+ GDE is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 3 of the License,
+ or (at your option) any later version.
+ 
+ GDE is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Lesser General Public License for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public License
+ along with GDE. See LICENSE. If not, write to
+ GDE Team at <gde-team@dpi.inpe.br>.
+ */
 
 /*!
   \file benchmark/main.cpp
+
   \brief Performance tests with geometric algorithms.
+
   \author Joao Vitor Chagas
  */
 
 // GDE - Benchmark
 #include "gen_random_data.hpp"
+#include "prepare_real_data.hpp"
 
 // GDE
 #include <gde/geom/core/geometric_primitives.hpp>
@@ -261,10 +267,10 @@ tiling_intersection_sequential(const std::vector<gde::geom::core::line_segment>&
 {
 
   // defines scope of the blocks
-  int range = (gde::geom::algorithm::return_positive_value(min_range) / max_length) + 2;
+  const int range = (gde::geom::algorithm::return_positive_value(min_range) / max_length) + 2;
 
   std::vector<gde::geom::core::point> ipts;
-  std::vector<gde::geom::core::line_segment> segments_range[range];
+  std::vector<gde::geom::core::line_segment> segments_range[0];
   double t_max;
   double block;
 
@@ -422,7 +428,7 @@ tiling_intersection_thread(const std::vector<gde::geom::core::line_segment>& seg
   int range = (gde::geom::algorithm::return_positive_value(min_range) / max_length) + 2;
 
   std::vector<gde::geom::core::point> ipts;
-  std::vector<gde::geom::core::line_segment> segments_range[range];
+  std::vector<gde::geom::core::line_segment> segments_range[0];
   double t_max;
   double block;
 
@@ -652,7 +658,7 @@ void do_tests3()
       result3.num_intersections = nips;
       result3.elapsed_time = end3 - start3;
       results.push_back(result3);
-/**/
+*/
       benchmark_t result3;
       result3.algorithm_name = "lazy ";
       result3.num_segments = num_segments;
@@ -676,11 +682,23 @@ void do_tests3()
 
 }
 
+
 int main(int argc, char* argv[])
 {
+  StartTerraLib();
+  
+  std::vector<gde::geom::core::line_segment> trechos_drenagem = extract_segments_from_shp("/Users/gribeiro/Desktop/Curso-TerraView/ba_drenagem/HID_Trecho_Drenagem_L.shp");
+  
+  std::vector<gde::geom::core::line_segment> trechos_rodoviario = extract_segments_from_shp("/Users/gribeiro/Desktop/Curso-TerraView/trechos_rodovarios/TRA_Trecho_Rodoviario_L.shp");
+  
+  std::cout << "trechos_drenagem: " << trechos_drenagem.size() << std::endl;
+  
+  std::cout << "trechos_rodoviario: " << trechos_rodoviario.size() << std::endl;
+  
+  StopTerraLib();
   //do_tests();
- //do_tests2();
-  do_tests3();
+  //do_tests2();
+  //do_tests3();
   
   return EXIT_SUCCESS;
 }

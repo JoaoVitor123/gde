@@ -26,15 +26,24 @@
 file(GLOB GDE_SRC_FILES ${GDE_ABSOLUTE_ROOT_DIR}/src/benchmark/*.cpp)
 file(GLOB GDE_HDR_FILES ${GDE_ABSOLUTE_ROOT_DIR}/src/benchmark/*.hpp)
 
-include_directories (
-  ${GDE_ABSOLUTE_ROOT_DIR}/src
-)
+include_directories (${GDE_ABSOLUTE_ROOT_DIR}/src)
+
+set(GDE_TARGET_LINK_LIBS gde_mod_geom_algorithm ${CMAKE_THREAD_LIBS_INIT})
+
+if(terralib_FOUND)
+  include_directories(${Boost_INCLUDE_DIR} ${terralib_INCLUDE_DIRS} ${terralib_DIR})
+
+  list(APPEND GDE_TARGET_LINK_LIBS terralib_mod_dataaccess
+                                   terralib_mod_plugin
+                                   terralib_mod_geometry )
+  add_definitions("-DGDE_WITH_TERRALIB")
+endif()
 
 source_group("Source Files"  FILES ${GDE_SRC_FILES})
 source_group("Header Files"  FILES ${GDE_HDR_FILES})
 
 add_executable(gde_benchmark ${GDE_SRC_FILES} ${GDE_HDR_FILES})
 
-target_link_libraries(gde_benchmark gde_mod_geom_algorithm ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(gde_benchmark ${GDE_TARGET_LINK_LIBS})
 
 add_test(NAME gde_benchmark COMMAND gde_benchmark)

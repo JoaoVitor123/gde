@@ -36,11 +36,6 @@
 #include <algorithm>
 #include <thread>
 
-void task1(std::string msg)
-{
-    std::cout << "task1 says: " << msg;
-}
-
 std::vector<gde::geom::core::point>
 gde::geom::algorithm::tiling_intersection(const std::vector<gde::geom::core::line_segment>& segments,
                                           const double& max_length, const double& max_range, const double& min_range)
@@ -102,10 +97,6 @@ gde::geom::algorithm::tiling_intersection(const std::vector<gde::geom::core::lin
     block += block_size;
     size += ipts.size();
   }
-  std::cout << size << "  tile \n\n";
-
- // std::thread t1(task1, "Hello");
-  //t1.join();
 
   return ipts;
 }

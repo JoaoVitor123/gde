@@ -164,34 +164,19 @@ include(CMakeDependentOption)
 
 find_package(Threads REQUIRED)
 
+find_package(Boost 1.54.0 COMPONENTS system chrono timer filesystem)
+
+if(Boost_FOUND)
+  find_package(terralib QUIET)
+endif()
+
 #find_package(Qt5 5.2 REQUIRED COMPONENTS Core Gui Widgets Network LinguistTools Test)
 
 #if(NOT Qt5_FOUND)
 #  message(FATAL_ERROR "GDE: could not find required Qt 5 libraries!")
 #endif()
 
-#if(NOT QT_QCOLLECTIONGENERATOR_EXECUTABLE)
-#  find_program(QT_QCOLLECTIONGENERATOR_EXECUTABLE
-#               NAME qcollectiongenerator
-#               PATHS /usr
-#                     /usr/local
-#                     ${Qt5_DIR}/../../..
-#               PATH_SUFFIXES bin)
-#endif()
-
-#find_package(Boost 1.54.0 REQUIRED system date_time chrono log timer filesystem)
-
-#if(NOT Boost_FOUND)
-#  message(FATAL_ERROR "GDE: could not find required Boost libraries!")
-#endif()
-
 #find_package(Doxygen)
-
-#find_package(terralib REQUIRED)
-
-#if(NOT terralib_FOUND)
-#  message(FATAL_ERROR "GDE: could not find TerraLib libraries!")
-#endif()
 
 
 #
