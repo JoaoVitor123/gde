@@ -54,6 +54,29 @@ namespace gde
       lazy_intersection(const std::vector<gde::geom::core::line_segment>& segments);
 
       /*!
+        \brief Given a set of red and blue segments compute the intersection points between each pair.
+
+        This implementation uses a brute force approach. It's complexity is O(n^2).
+
+        \note This is an O(n^2) algorithm.
+       */
+
+      std::vector<gde::geom::core::point>
+      lazy_intersection_rb(const std::vector<gde::geom::core::line_segment>& r,
+                           const std::vector<gde::geom::core::line_segment>& b);
+
+      /*!
+        \brief Given a set of red and blue segments compute the intersection points between each pair.
+
+        This implementation uses a brute force approach. It's complexity is O(n^2).
+
+        \note This is an O(n^2) algorithm.
+       */
+
+      std::size_t
+      lazy_intersection_thread(const std::vector<gde::geom::core::line_segment>& segments);
+
+      /*!
         \brief Given two poly-lines, named red and blue, compute the intersection points between their segments.
 
         \note This is an O(n^2) algorithm.
@@ -100,6 +123,33 @@ namespace gde
                            const double delimita_max, const double delimita_min);
 
       /*!
+        \brief Given a set of segments compute the intersection points between each pair.
+
+        This algorithm sorts all input segments by x-coordinate and then
+        utilizes a brute force algorithm to compute intersection points
+        between segments that overlap.
+
+        \note This algorithm has a worst-case performance of O(n^2), but in practice it is very competitive.
+       */
+
+      std::vector<gde::geom::core::point>
+      x_order_intersection_rb(const std::vector<gde::geom::core::line_segment>& red,
+                              const std::vector<gde::geom::core::line_segment>& blue,
+                              const double delimita_max, const double delimita_min);
+
+      /*!
+        \brief Given a set of segments compute the intersection points between each pair.
+
+        This algorithm sorts all input segments by x-coordinate and then
+        utilizes a brute force algorithm to compute intersection points
+        between segments that overlap.
+
+        \note This algorithm has a worst-case performance of O(n^2), but in practice it is very competitive.
+       */
+       std::size_t
+       x_order_intersection_thread(const std::vector<gde::geom::core::line_segment>& segments);
+
+      /*!
         \brief Given two poly-lines, named red and blue, compute the intersection points between their segments.
 
         This algorithm sorts all input segments by x-coordinate and then 
@@ -124,6 +174,36 @@ namespace gde
       std::vector<gde::geom::core::point>
       tiling_intersection(const std::vector<gde::geom::core::line_segment>& segments,
                           const double& max_length, const double& max_range, const double& min_range);
+
+      /*!
+        \brief Given a set of segments red and blue compute the intersection points between each pair.
+
+        This algorithm separates all the segments into blocks according to their y-coordinate , and then ,
+        using an x -order algorithm to find the intersection points
+        between segments of each block.
+
+        \note ????.
+       */
+
+      std::vector<gde::geom::core::point>
+      tiling_intersection_rb(const std::vector<gde::geom::core::line_segment>& red,
+                             const std::vector<gde::geom::core::line_segment>& blue,
+                             const double& max_length_r, const double& max_range_r, const double& min_range_r,
+                             const double& max_length_b, const double& max_range_b, const double& min_range_b);
+
+      /*!
+        \brief Given a set of segments compute the intersection points between each pair with thread.
+
+        This algorithm separates all the segments into blocks according to their y-coordinate , and then ,
+        using an x -order algorithm to find the intersection points
+        between segments of each block.
+
+        \note ????.
+       */
+
+      std::size_t
+      tiling_intersection_thread(const std::vector<gde::geom::core::line_segment>& segments,
+                                 const double& max_length, const double& max_range, const double& min_range);
 
 
     } // end namespace algorithm

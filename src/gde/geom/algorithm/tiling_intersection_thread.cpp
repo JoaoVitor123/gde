@@ -19,7 +19,7 @@
 */
 
 /*!
-  \file gde/geom/algorithm/tiling_intersection.cpp
+  \file gde/geom/algorithm/tiling_intersection_thread.cpp
 
   \brief tiling intersection algorithm.
 
@@ -36,19 +36,30 @@
 #include <algorithm>
 #include <thread>
 
-std::vector<gde::geom::core::point>
-gde::geom::algorithm::tiling_intersection(const std::vector<gde::geom::core::line_segment>& segments,
-                                          const double& max_length, const double& max_range, const double& min_range)
+struct parameter
 {
+    std::size_t size = 0;
+};
+
+void  task(std::vector<gde::geom::core::line_segment> elemento, double block, double block_size,
+            std::vector<gde::geom::core::point> ipts, struct parameter *pat)
+{
+    ipts = gde::geom::algorithm::x_order_intersection(elemento, block,(block-block_size));
+    pat->size += ipts.size();
+}
+
+std::size_t
+gde::geom::algorithm::tiling_intersection_thread(const std::vector<gde::geom::core::line_segment>& segments,
+                           const double& max_length, const double& max_range, const double& min_range)
+{
+
   // defines scope of the blocks
-  int range = (gde::geom::algorithm::return_positive_value(max_range) / max_length);
+  int range = (gde::geom::algorithm::return_positive_value(max_range) / max_length) + 2;
 
   std::vector<gde::geom::core::point> ipts;
   std::vector<gde::geom::core::line_segment> segments_range[range];
   double t_max;
   double block;
-
-
 
   t_max = max_range + gde::geom::algorithm::return_positive_value(min_range);
 
@@ -73,11 +84,6 @@ gde::geom::algorithm::tiling_intersection(const std::vector<gde::geom::core::lin
 // adds the segment in its corresponding block
         segments_range[cont].push_back(segments[i]);
 
-// ferifica if the segment is more than two blocks
-//        if(segments[i].p1.y > y + block_size || segments[i].p2.y > y + block_size &&
-//           y < t_max)
-//            continue;
-
 // checks if one of the points of this segment this the top of this block
         if((segments[i].p1.y > y || segments[i].p2.y > y) &&
            y < t_max)
@@ -87,16 +93,38 @@ gde::geom::algorithm::tiling_intersection(const std::vector<gde::geom::core::lin
       cont++;
     }
   }
-
 // x-ordering
-  int size = 0;
+  parameter pat;
 
+// declaring thread vector
+  std::vector<std::thread> vecThread;
+
+// check how many concurrency threads the hardware supports
+  unsigned int concurrency_threads = std::thread::hardware_concurrency();
+
+// traversing segment list
   for(auto& elemento: segments_range)
   {
-    ipts = gde::geom::algorithm::x_order_intersection(elemento, block,(block-block_size));
+
+// thread adds to the vector
+      vecThread.push_back(std::thread(&task,elemento,block,block_size,ipts,&pat));
+
+// if the hardware can handle the amount of threds
+      if((concurrency_threads-2) == (vecThread.size()))
+      {
+
+// running thread vector
+        for (auto& th : vecThread)
+        {
+          th.join();
+         // th.detach();
+        }
+
+// clear the threads vector
+      vecThread.clear();
+      }
     block += block_size;
-    size += ipts.size();
   }
 
-  return ipts;
+  return pat.size;
 }

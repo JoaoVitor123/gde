@@ -41,6 +41,6 @@ void StartTerraLib();
 void StopTerraLib();
 
 std::vector<gde::geom::core::line_segment>
-extract_segments_from_shp(const std::string& shp_file_name);
+extract_segments_from_shp(const std::string & shp_file_name);
 
 #endif // __GDE_BENCHMARK_PREPARE_REAL_DATA_HPP__

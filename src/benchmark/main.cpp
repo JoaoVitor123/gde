@@ -267,10 +267,10 @@ tiling_intersection_sequential(const std::vector<gde::geom::core::line_segment>&
 {
 
   // defines scope of the blocks
-  const int range = (gde::geom::algorithm::return_positive_value(min_range) / max_length) + 2;
+  const int range = (gde::geom::algorithm::return_positive_value(max_range) / max_length);
 
   std::vector<gde::geom::core::point> ipts;
-  std::vector<gde::geom::core::line_segment> segments_range[0];
+  std::vector<gde::geom::core::line_segment> segments_range[range];
   double t_max;
   double block;
 
@@ -405,187 +405,6 @@ void do_tests2()
 
 }
 
-#include <thread>
-
-struct parameter
-{
-    std::size_t size = 0;
-};
-
-void  task(std::vector<gde::geom::core::line_segment> elemento, double block, double block_size,
-            std::vector<gde::geom::core::point> ipts, struct parameter *pat)
-{
-    ipts = gde::geom::algorithm::x_order_intersection(elemento, block,(block-block_size));
-    pat->size += ipts.size();
-}
-
-std::size_t
-tiling_intersection_thread(const std::vector<gde::geom::core::line_segment>& segments,
-                           const double& max_length, const double& max_range, const double& min_range)
-{
-
-  // defines scope of the blocks
-  int range = (gde::geom::algorithm::return_positive_value(min_range) / max_length) + 2;
-
-  std::vector<gde::geom::core::point> ipts;
-  std::vector<gde::geom::core::line_segment> segments_range[0];
-  double t_max;
-  double block;
-
-  t_max = max_range + gde::geom::algorithm::return_positive_value(min_range);
-
-// size of the blocks
-  double block_size = t_max/range;
-
-// current block
-  block = min_range + block_size;
-
-// through all segments
-  for(int i = 0;i < segments.size(); ++i)
-  {
-    int cont = 0;
-// through every division blocks in Y
-    for(int y = block; y <= t_max; y += block_size)
-    {
-
-// checks whether the segment y value is within block
-      if(segments[i].p1.y < y || segments[i].p2.y < y)
-      {
-
-// adds the segment in its corresponding block
-        segments_range[cont].push_back(segments[i]);
-
-// checks if one of the points of this segment this the top of this block
-        if((segments[i].p1.y > y || segments[i].p2.y > y) &&
-           y < t_max)
-          segments_range[cont+1].push_back(segments[i]);
-        break;
-      }
-      cont++;
-    }
-  }
-// x-ordering
-  parameter pat;
-
-// declaring thread vector
-  std::vector<std::thread> vecThread;
-
-// check how many concurrency threads the hardware supports
-  unsigned int concurrency_threads = std::thread::hardware_concurrency();
-
-// traversing segment list
-  for(auto& elemento: segments_range)
-  {
-
-// thread adds to the vector
-      vecThread.push_back(std::thread(&task,elemento,block,block_size,ipts,&pat));
-
-// if the hardware can handle the amount of threds
-      if((concurrency_threads-2) == (vecThread.size()))
-      {
-
-// running thread vector
-        for (auto& th : vecThread)
-        {
-          th.join();
-         // th.detach();
-        }
-
-// clear the threads vector
-      vecThread.clear();
-      }
-    block += block_size;
-  }
-
-  return pat.size;
-}
-
-//  lazy Threads
-std::size_t
-lazy_intersection(const std::vector<gde::geom::core::line_segment>& segments, int nt)
-{
-  std::vector<gde::geom::core::point> result;
-  gde::geom::core::point ip1;
-  gde::geom::core::point ip2;
-
-  for(int i = 0; i < nt; ++i)
-  {
-    if(i  >= segments.size())
-      break;
-
-    const gde::geom::core::line_segment& red = segments[i];
-
-    for(int j = i + 1; j < nt; ++j)
-    {
-      if(j  >= segments.size())
-        break;
-
-      const gde::geom::core::line_segment& blue = segments[j];
-
-      if(!gde::geom::algorithm::do_bounding_box_intersects(red, blue))
-        continue;
-
-      gde::geom::algorithm::segment_relation_type spatial_relation = gde::geom::algorithm::compute_intesection_v3(red, blue, ip1, ip2);
-
-      if(spatial_relation == gde::geom::algorithm::DISJOINT)
-        continue;
-
-      result.push_back(ip1);
-
-      if(spatial_relation == gde::geom::algorithm::OVERLAP)
-        result.push_back(ip2);
-    }
-  }
-
-  return result.size();
-}
-
-
-struct parameter_lz
-{
-    std::size_t result = 0;
-};
-
-void  task_lz(std::vector<gde::geom::core::line_segment> segments_lz, int nt, struct parameter_lz *pat_lz)
-{
-  pat_lz->result += lazy_intersection(segments_lz, nt);
-}
-
-std::size_t lazy_thread(const std::vector<gde::geom::core::line_segment>& segments)
-{
-  parameter_lz pat_lz;
-
- // declaring thread vector
-  std::vector<std::thread> vecThread;
-
-// check how many concurrency threads the hardware supports
-  unsigned int concurrency_threads = std::thread::hardware_concurrency();
-
-  int nt = (segments.size() / (concurrency_threads - 2))  + 1;
-
-  for(int i = 0; i <= nt; i++)
-  {
-// thread adds to the vector
-    vecThread.push_back(std::thread(&task_lz, segments,nt, &pat_lz));
-
-// if the hardware can handle the amount of threds
-    if((concurrency_threads-2) == (vecThread.size()))
-    {
-
-// running thread vector
-    //  for (auto& th : vecThread)
-     // {
-        //th.join();
-    // th.detach();
-     // }
-
-// clear the threads vector
-      vecThread.clear();
-    }
-    nt += nt;
-  }
-  return  pat_lz.result;
-}
 
 void do_tests3()
 {
@@ -613,7 +432,7 @@ void do_tests3()
       start = std::chrono::system_clock::now();
       for(std::size_t i = 0; i < 5; ++i)
       {
-        nips = tiling_intersection_thread(segments, max_length, max_y, min_y);
+        nips = gde::geom::algorithm::tiling_intersection_thread(segments, max_length, max_y, min_y);
       }
       end = std::chrono::system_clock::now();
 
@@ -629,11 +448,15 @@ void do_tests3()
       std::chrono::time_point<std::chrono::system_clock> start2, end2;
       start2 = std::chrono::system_clock::now();
 
+      std::vector<gde::geom::core::point> tili_point;
+
       for(std::size_t i = 0; i < 5; ++i)
       {
-         nips = tiling_intersection_sequential(segments, max_length, max_y, min_y);
+         tili_point = gde::geom::algorithm::tiling_intersection(segments, max_length, max_y, min_y);
       }
-      end2 = std::chrono::system_clock::now();
+      end = std::chrono::system_clock::now();
+
+      nips = tili_point.size();
 
       result2.num_intersections = nips;
       result2.elapsed_time = end2 - start2;
@@ -658,7 +481,7 @@ void do_tests3()
       result3.num_intersections = nips;
       result3.elapsed_time = end3 - start3;
       results.push_back(result3);
-*/
+
       benchmark_t result3;
       result3.algorithm_name = "lazy ";
       result3.num_segments = num_segments;
@@ -675,7 +498,7 @@ void do_tests3()
 
       result3.num_intersections = nips;
       result3.elapsed_time = end3 - start3;
-      results.push_back(result3);
+      results.push_back(result3);*/
   }
 
    print(results);
@@ -687,9 +510,9 @@ int main(int argc, char* argv[])
 {
   StartTerraLib();
   
-  std::vector<gde::geom::core::line_segment> trechos_drenagem = extract_segments_from_shp("/Users/gribeiro/Desktop/Curso-TerraView/ba_drenagem/HID_Trecho_Drenagem_L.shp");
+  std::vector<gde::geom::core::line_segment> trechos_drenagem = extract_segments_from_shp("/home/joao/Desktop/ba_drenagem/ba_drenagem/HID_Trecho_Drenagem_L.shp");
   
-  std::vector<gde::geom::core::line_segment> trechos_rodoviario = extract_segments_from_shp("/Users/gribeiro/Desktop/Curso-TerraView/trechos_rodovarios/TRA_Trecho_Rodoviario_L.shp");
+  std::vector<gde::geom::core::line_segment> trechos_rodoviario = extract_segments_from_shp("/home/joao/Desktop/trechos_rodovarios/trechos_rodovarios/TRA_Trecho_Rodoviario_L.shp");
   
   std::cout << "trechos_drenagem: " << trechos_drenagem.size() << std::endl;
   
