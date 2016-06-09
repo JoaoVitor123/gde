@@ -144,3 +144,4 @@ gde::geom::algorithm::x_order_intersection(const std::vector<gde::geom::core::li
 
   return ipts;
 }
+
