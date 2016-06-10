@@ -98,5 +98,5 @@ gde::geom::algorithm::x_order_intersection_rb(const std::vector<gde::geom::core:
     }
   }
 
-  return std::move(ipts);
+  return ipts;
 }

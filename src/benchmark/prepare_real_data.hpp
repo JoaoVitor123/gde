@@ -43,4 +43,10 @@ void StopTerraLib();
 std::vector<gde::geom::core::line_segment>
 extract_segments_from_shp(const std::string & shp_file_name);
 
+void save_intersection_points(const std::vector<gde::geom::core::point>& ipts,
+                              int initial_gid,
+                              int srid,
+                              const std::string& shapefile_name);
+
+
 #endif // __GDE_BENCHMARK_PREPARE_REAL_DATA_HPP__

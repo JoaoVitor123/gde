@@ -44,7 +44,7 @@ gde::geom::algorithm::tiling_intersection(const std::vector<gde::geom::core::lin
   int range = (gde::geom::algorithm::return_positive_value(max_range) / max_length);
 
   std::vector<gde::geom::core::point> ipts;
-  std::vector<gde::geom::core::line_segment> segments_range[range];
+  std::vector<gde::geom::core::line_segment> segments_range[4];
   double t_max;
   double block;
 

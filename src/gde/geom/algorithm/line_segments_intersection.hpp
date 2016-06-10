@@ -44,9 +44,10 @@ namespace gde
     {
 
       /*!
-        \brief Given a set of segments compute the intersection points between each pair.
+        \brief Given a set of segments compute the intersection points between each pair of segments.
 
-        This implementation uses a brute force approach. It's complexity is O(n^2).
+        This implementation is based on a brute force approach.
+        It's complexity is O(n^2), where n is the number of segments in the input set.
 
         \note This is an O(n^2) algorithm.
        */
@@ -54,37 +55,54 @@ namespace gde
       lazy_intersection(const std::vector<gde::geom::core::line_segment>& segments);
 
       /*!
-        \brief Given a set of red and blue segments compute the intersection points between each pair.
+        \brief Given two set of segments, called red and blue sets, compute the intersection points
+               between red and blue segments.
 
-        This implementation uses a brute force approach. It's complexity is O(n^2).
+        This implementation is based on a brute force approach.
+        It's complexity is O(n*m), where n is the number of segments in the red set and
+        m is the number of segments in the blue set.
 
-        \note This is an O(n^2) algorithm.
+        \note This is an O(n*m) algorithm.
        */
-
       std::vector<gde::geom::core::point>
       lazy_intersection_rb(const std::vector<gde::geom::core::line_segment>& r,
                            const std::vector<gde::geom::core::line_segment>& b);
 
       /*!
-        \brief Given a set of red and blue segments compute the intersection points between each pair.
+        \brief Given a set of segments compute the intersection points between each pair of segments.
 
-        This implementation uses a brute force approach. It's complexity is O(n^2).
+        This implementation is based on a brute force approach. Therefore
+        it will apply a given number of threads to compute the intersections.
+        
+        Although it uses threads, the whole complexity
+        still O(n^2), where n is the number of segments in the input set.
 
         \note This is an O(n^2) algorithm.
        */
-
-      std::size_t
-      lazy_intersection_thread(const std::vector<gde::geom::core::line_segment>& segments);
+      void
+      lazy_intersection_thread(const std::vector<gde::geom::core::line_segment>& segments,
+                               std::size_t nthreads,
+                               std::vector<std::vector<gde::geom::core::point> >& intersetion_pts);
 
       /*!
-        \brief Given two poly-lines, named red and blue, compute the intersection points between their segments.
-
-        \note This is an O(n^2) algorithm.
+        \brief Given two set of segments, called red and blue sets, compute the intersection points
+               between red and blue segments.
+       
+        This implementation is based on a brute force approach. Therefore
+        it will apply a given number of threads to compute the intersections.
+       
+        Although it uses threads, the whole complexity
+        still O(n*m), where n is the number of segments in the red set and
+        m is the number of segments in the blue set.
+       
+        \note This is an O(n*m) algorithm.
        */
-      //std::vector<gde::geom::core::point>
-      //lazy_intersection(gde::geom::core::line_string& red_line,
-      //                  gde::geom::core::line_segment& blue_line);
-
+      void
+      lazy_intersection_rb_thread(const std::vector<gde::geom::core::line_segment>& r,
+                                  const std::vector<gde::geom::core::line_segment>& b,
+                                  std::size_t nthreads,
+                                  std::vector<std::vector<gde::geom::core::point> >& intersetion_pts);
+      
       /*!
         \brief Given a set of segments compute the intersection points between each pair.
         

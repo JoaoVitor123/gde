@@ -35,17 +35,21 @@ std::vector<gde::geom::core::point>
 gde::geom::algorithm::lazy_intersection(const std::vector<gde::geom::core::line_segment>& segments)
 {
   std::vector<gde::geom::core::point> result;
+
   gde::geom::core::point ip1;
   gde::geom::core::point ip2;
 
   const std::size_t number_of_segments = segments.size();
 
-  for(std::size_t i = 0; i < (number_of_segments - 1); ++i)
+  for(std::size_t i = 0; i < number_of_segments; ++i)
   {
     const gde::geom::core::line_segment& red = segments[i];
 
-    for(std::size_t j = i + 1; j < number_of_segments; ++j)
+    for(std::size_t j = 0; j < number_of_segments; ++j)
     {
+      if(i == j)
+        continue;
+
       const gde::geom::core::line_segment& blue = segments[j];
       
       if(!do_bounding_box_intersects(red, blue))

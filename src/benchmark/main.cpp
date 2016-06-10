@@ -37,12 +37,15 @@
 #include <gde/geom/algorithm/utils.hpp>
 
 // STL
+#include <algorithm>
 #include <chrono>
 #include <cstdlib>
 #include <ctime>
 #include <iomanip>
 #include <iostream>
+#include <iterator>
 #include <string>
+#include <thread>
 
 struct benchmark_t
 {
@@ -270,7 +273,7 @@ tiling_intersection_sequential(const std::vector<gde::geom::core::line_segment>&
   const int range = (gde::geom::algorithm::return_positive_value(max_range) / max_length);
 
   std::vector<gde::geom::core::point> ipts;
-  std::vector<gde::geom::core::line_segment> segments_range[range];
+  std::vector<gde::geom::core::line_segment> segments_range[4];
   double t_max;
   double block;
 
@@ -510,15 +513,30 @@ int main(int argc, char* argv[])
 {
   StartTerraLib();
   
-  std::vector<gde::geom::core::line_segment> trechos_drenagem = extract_segments_from_shp("/home/joao/Desktop/ba_drenagem/ba_drenagem/HID_Trecho_Drenagem_L.shp");
+  std::vector<gde::geom::core::line_segment> trechos_drenagem = extract_segments_from_shp("/Users/gribeiro/Desktop/Curso-TerraView/ba_drenagem/HID_Trecho_Drenagem_L.shp");
   
-  std::vector<gde::geom::core::line_segment> trechos_rodoviario = extract_segments_from_shp("/home/joao/Desktop/trechos_rodovarios/trechos_rodovarios/TRA_Trecho_Rodoviario_L.shp");
+  std::vector<gde::geom::core::line_segment> trechos_rodoviario = extract_segments_from_shp("/Users/gribeiro/Desktop/Curso-TerraView/trechos_rodovarios/TRA_Trecho_Rodoviario_L.shp");
   
-  std::cout << "trechos_drenagem: " << trechos_drenagem.size() << std::endl;
+  std::size_t num_threads = std::thread::hardware_concurrency();
   
-  std::cout << "trechos_rodoviario: " << trechos_rodoviario.size() << std::endl;
+  //trechos_drenagem.resize(10000);
+  //trechos_rodoviario.resize(10000);
   
+  std::vector<std::vector<gde::geom::core::point> > intersetion_pts;
+  
+  gde::geom::algorithm::lazy_intersection_rb_thread(trechos_drenagem, trechos_rodoviario, num_threads, intersetion_pts);
+  
+  std::vector<gde::geom::core::point> ipts;
+  
+  for(const auto& vecipts : intersetion_pts)
+  {
+    std::copy(vecipts.begin(), vecipts.end(), std::back_inserter(ipts));
+  }
+  
+  save_intersection_points(ipts, 0, 4674, "/Users/gribeiro/Desktop/Curso-TerraView/intersections.shp");
+                                                    
   StopTerraLib();
+  
   //do_tests();
   //do_tests2();
   //do_tests3();

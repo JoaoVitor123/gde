@@ -33,7 +33,8 @@ set(GDE_TARGET_LINK_LIBS gde_mod_geom_algorithm ${CMAKE_THREAD_LIBS_INIT})
 if(terralib_FOUND)
   include_directories(${Boost_INCLUDE_DIR} ${terralib_INCLUDE_DIRS} ${terralib_DIR})
 
-  list(APPEND GDE_TARGET_LINK_LIBS terralib_mod_dataaccess
+  list(APPEND GDE_TARGET_LINK_LIBS terralib_mod_memory
+                                   terralib_mod_dataaccess
                                    terralib_mod_plugin
                                    terralib_mod_geometry )
   add_definitions("-DGDE_WITH_TERRALIB")

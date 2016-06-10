@@ -35,6 +35,7 @@
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/geometry.h>
+#include <terralib/memory.h>
 #include <terralib/plugin.h>
 #endif
 
@@ -70,6 +71,7 @@ template<class OutputIterator>
 void Convert2Segments(const te::gm::Geometry& geom,
                       OutputIterator result)
 {
+#ifdef GDE_WITH_TERRALIB
   switch(geom.getGeomTypeId())
   {
     case te::gm::LineStringType:
@@ -126,6 +128,7 @@ void Convert2Segments(const te::gm::Geometry& geom,
     default:
       throw std::logic_error("Invalid geometry type!");
   }
+#endif
 }
 
 std::vector<gde::geom::core::line_segment>
@@ -166,4 +169,53 @@ extract_segments_from_shp(const std::string& shp_file_name)
 #endif
   
   return segments;
+}
+
+te::gm::Point*
+Convert2Point(const gde::geom::core::point& ip, int srid)
+{
+  te::gm::Point* pt = new te::gm::Point(ip.x, ip.y, srid);
+  
+  return pt;
+}
+
+void save_intersection_points(const std::vector<gde::geom::core::point>& ipts,
+                              int initial_gid,
+                              int srid,
+                              const std::string& shapefile_name)
+{
+  std::auto_ptr<te::da::DataSetType> dt(new te::da::DataSetType("intersections"));
+  
+  te::dt::SimpleProperty* p1 = new te::dt::SimpleProperty("gid", te::dt::INT32_TYPE, true);
+  te::gm::GeometryProperty* p2 = new te::gm::GeometryProperty("ip", srid, te::gm::PointType, true);
+  
+  dt->add(p1);
+  dt->add(p2);
+  
+  std::unique_ptr<te::mem::DataSet> dataset(new te::mem::DataSet(dt.get()));
+  
+  for(std::size_t i = 0; i < ipts.size(); ++i)
+  {
+    int gid = initial_gid + i;
+    
+    te::gm::Point* pt = Convert2Point(ipts[i], srid);
+    
+    te::mem::DataSetItem* item = new te::mem::DataSetItem(dataset.get());
+    item->setInt32(0, gid);
+    item->setGeometry(1, pt);
+    
+    dataset->add(item);
+  }
+  
+  std::map<std::string, std::string> connInfo;
+  connInfo["URI"] = shapefile_name;
+  connInfo["DRIVER"] = "ESRI Shapefile";
+  
+  std::auto_ptr<te::da::DataSource> dsOGR = te::da::DataSourceFactory::make("OGR");
+  dsOGR->setConnectionInfo(connInfo);
+  dsOGR->open();
+  
+  dataset->moveBeforeFirst();
+  
+  te::da::Create(dsOGR.get(), dt.get(), dataset.get());
 }
