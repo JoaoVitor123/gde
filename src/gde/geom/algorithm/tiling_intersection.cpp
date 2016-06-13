@@ -36,67 +36,67 @@
 #include <algorithm>
 #include <thread>
 
-std::vector<gde::geom::core::point>
-gde::geom::algorithm::tiling_intersection(const std::vector<gde::geom::core::line_segment>& segments,
-                                          const double& max_length, const double& max_range, const double& min_range)
-{
-  // defines scope of the blocks
-  int range = (gde::geom::algorithm::return_positive_value(max_range) / max_length);
-
-  std::vector<gde::geom::core::point> ipts;
-  std::vector<gde::geom::core::line_segment> segments_range[4];
-  double t_max;
-  double block;
-
-
-
-  t_max = max_range + gde::geom::algorithm::return_positive_value(min_range);
-
-// size of the blocks
-  double block_size = t_max/range;
-
-// current block
-  block = min_range + block_size;
-
-// through all segments
-  for(int i = 0;i < segments.size(); ++i)
-  {
-    int cont = 0;
-// through every division blocks in Y
-    for(int y = block; y <= t_max; y += block_size)
-    {
-
-// checks whether the segment y value is within block
-      if(segments[i].p1.y < y || segments[i].p2.y < y)
-      {
-
-// adds the segment in its corresponding block
-        segments_range[cont].push_back(segments[i]);
-
-// ferifica if the segment is more than two blocks
-//        if(segments[i].p1.y > y + block_size || segments[i].p2.y > y + block_size &&
+//std::vector<gde::geom::core::point>
+//gde::geom::algorithm::tiling_intersection(const std::vector<gde::geom::core::line_segment>& segments,
+//                                          const double& max_length, const double& max_range, const double& min_range)
+//{
+//  // defines scope of the blocks
+//  int range = (gde::geom::algorithm::return_positive_value(max_range) / max_length);
+//
+//  std::vector<gde::geom::core::point> ipts;
+//  std::vector<gde::geom::core::line_segment> segments_range[4];
+//  double t_max;
+//  double block;
+//
+//
+//
+//  t_max = max_range + gde::geom::algorithm::return_positive_value(min_range);
+//
+//// size of the blocks
+//  double block_size = t_max/range;
+//
+//// current block
+//  block = min_range + block_size;
+//
+//// through all segments
+//  for(int i = 0;i < segments.size(); ++i)
+//  {
+//    int cont = 0;
+//// through every division blocks in Y
+//    for(int y = block; y <= t_max; y += block_size)
+//    {
+//
+//// checks whether the segment y value is within block
+//      if(segments[i].p1.y < y || segments[i].p2.y < y)
+//      {
+//
+//// adds the segment in its corresponding block
+//        segments_range[cont].push_back(segments[i]);
+//
+//// ferifica if the segment is more than two blocks
+////        if(segments[i].p1.y > y + block_size || segments[i].p2.y > y + block_size &&
+////           y < t_max)
+////            continue;
+//
+//// checks if one of the points of this segment this the top of this block
+//        if((segments[i].p1.y > y || segments[i].p2.y > y) &&
 //           y < t_max)
-//            continue;
-
-// checks if one of the points of this segment this the top of this block
-        if((segments[i].p1.y > y || segments[i].p2.y > y) &&
-           y < t_max)
-          segments_range[cont+1].push_back(segments[i]);
-        break;
-      }
-      cont++;
-    }
-  }
-
-// x-ordering
-  int size = 0;
-
-  for(auto& elemento: segments_range)
-  {
-    ipts = gde::geom::algorithm::x_order_intersection(elemento, block,(block-block_size));
-    block += block_size;
-    size += ipts.size();
-  }
-
-  return ipts;
-}
+//          segments_range[cont+1].push_back(segments[i]);
+//        break;
+//      }
+//      cont++;
+//    }
+//  }
+//
+//// x-ordering
+//  int size = 0;
+//
+//  for(auto& elemento: segments_range)
+//  {
+//    ipts = gde::geom::algorithm::x_order_intersection(elemento, block,(block-block_size));
+//    block += block_size;
+//    size += ipts.size();
+//  }
+//
+//  return ipts;
+//}

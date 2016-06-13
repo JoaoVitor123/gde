@@ -35,92 +35,6 @@
 #include <algorithm>
 #include <thread>
 
-//std::size_t
-//lazy_threadg(const std::vector<gde::geom::core::line_segment>& segments, int nt)
-//{
-//  std::vector<gde::geom::core::point> result;
-//  gde::geom::core::point ip1;
-//  gde::geom::core::point ip2;
-//
-//  for(int i = 0; i < nt; ++i)
-//  {
-//    if(i  >= segments.size())
-//      break;
-//
-//    const gde::geom::core::line_segment& red = segments[i];
-//
-//    for(int j = i + 1; j < nt; ++j)
-//    {
-//      if(j  >= segments.size())
-//        break;
-//
-//      const gde::geom::core::line_segment& blue = segments[j];
-//
-//      if(!gde::geom::algorithm::do_bounding_box_intersects(red, blue))
-//        continue;
-//
-//      gde::geom::algorithm::segment_relation_type spatial_relation = gde::geom::algorithm::compute_intesection_v3(red, blue, ip1, ip2);
-//
-//      if(spatial_relation == gde::geom::algorithm::DISJOINT)
-//        continue;
-//
-//      result.push_back(ip1);
-//
-//      if(spatial_relation == gde::geom::algorithm::OVERLAP)
-//        result.push_back(ip2);
-//    }
-//  }
-//
-//  return result.size();
-//}
-//
-//struct parameter_lz
-//{
-//    std::size_t result = 0;
-//};
-//
-//void  task_lz(std::vector<gde::geom::core::line_segment> segments_lz, int nt, struct parameter_lz *pat_lz)
-//{
-//  pat_lz->result += lazy_threadg(segments_lz, nt);
-//}
-//
-//std::size_t
-//gde::geom::algorithm::lazy_intersection_thread(const std::vector<gde::geom::core::line_segment>& segments)
-//{
-//  parameter_lz pat_lz;
-//
-// // declaring thread vector
-//  std::vector<std::thread> vecThread;
-//
-//// check how many concurrency threads the hardware supports
-//  unsigned int concurrency_threads = std::thread::hardware_concurrency();
-//
-//  int nt = (segments.size() / (concurrency_threads - 2))  + 1;
-//
-//  for(int i = 0; i <= nt; i++)
-//  {
-//// thread adds to the vector
-//   // vecThread.push_back(std::thread(&task_lz, segments,nt, &pat_lz));
-//
-//// if the hardware can handle the amount of threds
-//    if((concurrency_threads-2) == (vecThread.size()))
-//    {
-//
-//// running thread vector
-//    //  for (auto& th : vecThread)
-//     // {
-//        //th.join();
-//    // th.detach();
-//     // }
-//
-//// clear the threads vector
-//      vecThread.clear();
-//    }
-//    nt += nt;
-//  }
-//  return  pat_lz.result;
-//}
-
 struct intersection_computer
 {
   std::size_t thread_pos;
@@ -139,7 +53,7 @@ struct intersection_computer
     {
       const gde::geom::core::line_segment& red = (*segments)[i];
       
-      for(std::size_t j = 0; j < nsegments; ++j)
+      for(std::size_t j = i; j < nsegments; ++j)
       {
         if(i == j)
           continue;

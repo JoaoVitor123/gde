@@ -74,6 +74,17 @@ namespace gde
       {
         return (lhs.x == rhs.x) && (lhs.y == rhs.y);
       }
+      
+      /*!
+        \enum color_type
+
+        \brief For algorithms that must color items.
+       */
+      enum color_type
+      {
+        RED,
+        BLUE
+      };
 
     } // end namespace core
   } // end namespace geom

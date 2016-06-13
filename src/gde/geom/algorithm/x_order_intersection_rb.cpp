@@ -35,64 +35,129 @@
 // STL
 #include <algorithm>
 
-inline void
-sort_transform_segments(const std::vector<gde::geom::core::line_segment>& segments,
-                        std::vector<gde::geom::core::line_segment>& ordered_segments)
+/*!
+  \struct red_blue_sort_segment_xy
+       
+  Given a line segment it will build a new one ordered from left to right.
+ */
+struct red_blue_sort_segment_xy : public std::unary_function<gde::geom::core::line_segment,
+                                                             std::pair<gde::geom::core::line_segment,
+                                                                       gde::geom::core::color_type> >
 {
-// copy the input segments and order each one them from left-right
-  std::transform(segments.begin(), segments.end(), ordered_segments.begin(), gde::geom::algorithm::sort_segment_xy());
+  gde::geom::core::color_type color;
+  
+  red_blue_sort_segment_xy(gde::geom::core::color_type c)
+    : color(c)
+  {
+  }
+  
+  std::pair<gde::geom::core::line_segment,
+            gde::geom::core::color_type> operator()(const gde::geom::core::line_segment& s)
+  {
+    if(s.p1.x < s.p2.x)
+      return std::make_pair(s, color);
+          
+    if(s.p1.x > s.p2.x)
+      return std::make_pair(gde::geom::core::line_segment(s.p2, s.p1), color);
+          
+    if(s.p1.y < s.p2.y)
+      return std::make_pair(s, color);
+          
+    if(s.p1.y > s.p2.y)
+      return std::make_pair(gde::geom::core::line_segment(s.p2, s.p1), color);
+          
+    return std::make_pair(s, color);
+  }
+};
 
-// sort all the segments from left to right
-  std::sort(ordered_segments.begin(), ordered_segments.end(), gde::geom::algorithm::line_segment_xy_cmp());
-}
+struct red_blue_segment_xy_cmp : std::less<std::pair<gde::geom::core::line_segment,
+                                                     gde::geom::core::color_type> >
+{
+  bool operator()(const std::pair<gde::geom::core::line_segment,
+                                  gde::geom::core::color_type>& lhs,
+                  const std::pair<gde::geom::core::line_segment,
+                                  gde::geom::core::color_type>& rhs) const
+  {
+    if(lhs.first.p1.x < rhs.first.p1.x)
+      return true;
+          
+    if(lhs.first.p1.x > rhs.first.p1.x)
+      return false;
+          
+    if(lhs.first.p1.y < rhs.first.p1.y)
+      return true;
+    
+    return false;
+  }
+};
 
 std::vector<gde::geom::core::point>
-gde::geom::algorithm::x_order_intersection_rb(const std::vector<gde::geom::core::line_segment>& red,
-                                              const std::vector<gde::geom::core::line_segment>& blue,
-                                              const double delimita_max, const double delimita_min)
+gde::geom::algorithm::x_order_intersection_rb(const std::vector<gde::geom::core::line_segment>& red_segments,
+                                              const std::vector<gde::geom::core::line_segment>& blue_segments)
 {
- // std::cout << delimita_max << "   "  <<  delimita_min << std::endl;
-// create a new segment vector with the same size as input segments
-  std::vector<gde::geom::core::line_segment> ordered_segments_r(red.size());
-  std::vector<gde::geom::core::line_segment> ordered_segments_b(blue.size());
-
-// organizes segments
-  sort_transform_segments(red, ordered_segments_r);
-  sort_transform_segments(blue, ordered_segments_b);
-
 // output list of intersection points
   std::vector<gde::geom::core::point> ipts;
 
+  const std::size_t nred_segments = red_segments.size();
+  
+  const std::size_t nblue_segments = blue_segments.size();
+
+// check if we have at least two segments to test!
+  if((nred_segments == 0) || (nblue_segments == 0))
+    return ipts;
+  
+  const std::size_t nsegments = nred_segments + nblue_segments;
+
+// create new segment vectors with the same size as input ones
+  std::vector<std::pair<gde::geom::core::line_segment,
+                        gde::geom::core::color_type> > ordered_segments(nsegments);
+  
+// copy the input segments but make sure segments will be left-right ordered
+  auto it = std::transform(red_segments.begin(), red_segments.end(), ordered_segments.begin(), red_blue_sort_segment_xy(gde::geom::core::RED));
+  std::transform(blue_segments.begin(), blue_segments.end(), it, red_blue_sort_segment_xy(gde::geom::core::BLUE));
+
+// sort all the segments from left to right
+  std::sort(ordered_segments.begin(), ordered_segments.end(), red_blue_segment_xy_cmp());
+
 // retain intersection points between tests
   gde::geom::core::point ip1, ip2;
+  
+  const std::size_t nbands = nsegments - 1;
 
 // first scan ordered_segments from the first segment
-  for(int i = 0; i < (ordered_segments_r.size() - 1); ++i)
+  for(std::size_t i = 0; i < nbands; ++i)
   {
+    const auto& current_seg = ordered_segments[i];
+
 // scan segments from i + 1
-    for (int j = i + 1; j < ordered_segments_b.size(); j++)
+    for(std::size_t j = i + 1; j < nsegments; ++j)
     {
-// if beginning x-coordinate of the second is greater than the last
-// x-coordinate of the first segment: stop => no more segments can intersects.
-      if(ordered_segments_r[i].p2.x < ordered_segments_b[j].p1.x)
+      const auto& next_seg = ordered_segments[j];
+
+// if beginning x-coordinate of the next-segment is greater than
+// the end x-coordinate of the current-segment, they can not intersect
+// and all following sgments will be out-of current segment
+// interval => stop: no more segments can intersects.
+      if(current_seg.first.p2.x < next_seg.first.p1.x)
         break;
+      
+// if segments have the same color, we don't compare!
+      if(current_seg.second == next_seg.second)
+        continue;
 
 // if segments y-interval don't intersect they will not have intersection,
 // let's test the next segment!
-      if(!do_y_interval_intersects(ordered_segments_r[i], ordered_segments_b[j]))
+      if(!do_y_interval_intersects(current_seg.first, next_seg.first))
         continue;
-
+      
 // check for intersection
-      segment_relation_type result = compute_intesection_v3(ordered_segments_r[i], ordered_segments_b[j], ip1, ip2);
-
+      segment_relation_type result = compute_intesection_v3(current_seg.first, next_seg.first, ip1, ip2);
+      
       if(result == DISJOINT)
         continue;
-
-      if(ip1.y > delimita_max || ip1.y <  delimita_min)
-        continue;
-
+      
       ipts.push_back(ip1);
-
+      
       if(result == OVERLAP)
         ipts.push_back(ip2);
     }

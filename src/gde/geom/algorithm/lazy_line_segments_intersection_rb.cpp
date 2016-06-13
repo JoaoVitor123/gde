@@ -32,24 +32,24 @@
 #include "line_segment_intersection.hpp"
 
 std::vector<gde::geom::core::point>
-gde::geom::algorithm::lazy_intersection_rb(const std::vector<gde::geom::core::line_segment>& r,
-                                           const std::vector<gde::geom::core::line_segment>& b)
+gde::geom::algorithm::lazy_intersection_rb(const std::vector<gde::geom::core::line_segment>& red_segments,
+                                           const std::vector<gde::geom::core::line_segment>& blue_segments)
 {
   std::vector<gde::geom::core::point> result;
 
   gde::geom::core::point ip1;
   gde::geom::core::point ip2;
   
-  const std::size_t rsize = r.size();
-  const std::size_t bsize = b.size();
+  const std::size_t rsize = red_segments.size();
+  const std::size_t bsize = blue_segments.size();
 
   for(std::size_t i = 0; i != rsize; ++i)
   {
-    const gde::geom::core::line_segment& red = r[i];
+    const gde::geom::core::line_segment& red = red_segments[i];
 
     for(std::size_t j = 0; j < bsize; ++j)
     {
-      const gde::geom::core::line_segment& blue = b[j];
+      const gde::geom::core::line_segment& blue = blue_segments[j];
 
       if(!do_bounding_box_intersects(red, blue))
         continue;

@@ -45,7 +45,7 @@ gde::geom::algorithm::lazy_intersection(const std::vector<gde::geom::core::line_
   {
     const gde::geom::core::line_segment& red = segments[i];
 
-    for(std::size_t j = 0; j < number_of_segments; ++j)
+    for(std::size_t j = i; j < number_of_segments; ++j)
     {
       if(i == j)
         continue;

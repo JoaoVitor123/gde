@@ -77,8 +77,8 @@ struct intersection_computer
 };
 
 void
-gde::geom::algorithm::lazy_intersection_rb_thread(const std::vector<gde::geom::core::line_segment>& r,
-                                                  const std::vector<gde::geom::core::line_segment>& b,
+gde::geom::algorithm::lazy_intersection_rb_thread(const std::vector<gde::geom::core::line_segment>& red_segments,
+                                                  const std::vector<gde::geom::core::line_segment>& blue_segments,
                                                   std::size_t nthreads,
                                                   std::vector<std::vector<gde::geom::core::point> >& intersetion_pts)
 {
@@ -88,7 +88,7 @@ gde::geom::algorithm::lazy_intersection_rb_thread(const std::vector<gde::geom::c
   
   for(std::size_t i = 0; i != nthreads; ++i)
   {
-    intersection_computer ic = { i, nthreads, &(intersetion_pts[i]), &r, &b};
+    intersection_computer ic = { i, nthreads, &(intersetion_pts[i]), &red_segments, &blue_segments};
     threads.push_back(std::thread(ic));
   }
   

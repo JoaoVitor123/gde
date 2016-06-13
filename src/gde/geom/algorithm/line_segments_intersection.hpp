@@ -42,7 +42,6 @@ namespace gde
   {
     namespace algorithm
     {
-
       /*!
         \brief Given a set of segments compute the intersection points between each pair of segments.
 
@@ -65,8 +64,8 @@ namespace gde
         \note This is an O(n*m) algorithm.
        */
       std::vector<gde::geom::core::point>
-      lazy_intersection_rb(const std::vector<gde::geom::core::line_segment>& r,
-                           const std::vector<gde::geom::core::line_segment>& b);
+      lazy_intersection_rb(const std::vector<gde::geom::core::line_segment>& red_segments,
+                           const std::vector<gde::geom::core::line_segment>& blue_segments);
 
       /*!
         \brief Given a set of segments compute the intersection points between each pair of segments.
@@ -98,31 +97,10 @@ namespace gde
         \note This is an O(n*m) algorithm.
        */
       void
-      lazy_intersection_rb_thread(const std::vector<gde::geom::core::line_segment>& r,
-                                  const std::vector<gde::geom::core::line_segment>& b,
+      lazy_intersection_rb_thread(const std::vector<gde::geom::core::line_segment>& red_segments,
+                                  const std::vector<gde::geom::core::line_segment>& blue_segments,
                                   std::size_t nthreads,
                                   std::vector<std::vector<gde::geom::core::point> >& intersetion_pts);
-      
-      /*!
-        \brief Given a set of segments compute the intersection points between each pair.
-        
-        This algorithm is based on the Plane Sweep paradigm.
-
-        \note This is an O(n log(n) + k log(n)) algorithm.
-       */
-      //std::vector<gde::geom::core::point>
-      //bentley_ottman_intersection(std::vector<gde::geom::core::line_segment>& segments);
-
-      /*!
-        \brief Given two poly-lines, named red and blue, compute the intersection points between their segments.
-
-        This algorithm is based on the plane sweep paradigm.
-
-        \note This is an O(n log(n) + k log(n)) algorithm.
-       */
-      //std::vector<gde::geom::core::point>
-      //bentley_ottman_intersection(gde::geom::core::line_string& red_line,
-      //                            gde::geom::core::line_segment& blue_line);
 
       /*!
         \brief Given a set of segments compute the intersection points between each pair.
@@ -130,30 +108,41 @@ namespace gde
         This algorithm sorts all input segments by x-coordinate and then 
         utilizes a brute force algorithm to compute intersection points
         between segments that overlap.
+        
+        This algorithm works like a plane-sweep, but it sweeps along
+        only one direction.
+        
+        The worst-case performance is O(n^2), where n is the number of
+        input segments. Therefore, the expected running time will depend
+        on the number of segments in the vertical bands defined by
+        the x-ordering of the segments. It will be O(n * E(n)), where E(n)
+        is the average number of segments in each vertical band.
 
         \note This algorithm has a worst-case performance of O(n^2), but in practice it is very competitive.
        */
       std::vector<gde::geom::core::point>
       x_order_intersection(const std::vector<gde::geom::core::line_segment>& segments);
 
-      std::vector<gde::geom::core::point>
-      x_order_intersection(const std::vector<gde::geom::core::line_segment>& segments,
-                           const double delimita_max, const double delimita_min);
-
       /*!
-        \brief Given a set of segments compute the intersection points between each pair.
+        \brief Given two set of segments, called red and blue sets, compute the intersection points
+               between red and blue segments.
 
-        This algorithm sorts all input segments by x-coordinate and then
-        utilizes a brute force algorithm to compute intersection points
-        between segments that overlap.
+        This algorithm works like a plane-sweep, but it sweeps along
+        only one direction.
+        
+        The worst-case performance is O(n*m), where n is the number of segments
+        in the red set and m is the number of segments in the blue set.
+        Therefore, the expected running time will depend
+        on the number of blue segments in the vertical bands defined by
+        each red segment. It will be O(n * E(m)), where E(m)
+        is the average number of segments in each vertical band.
 
-        \note This algorithm has a worst-case performance of O(n^2), but in practice it is very competitive.
+        \note This algorithm has a worst-case performance of O(n*m), but in practice it is very competitive.
        */
 
       std::vector<gde::geom::core::point>
-      x_order_intersection_rb(const std::vector<gde::geom::core::line_segment>& red,
-                              const std::vector<gde::geom::core::line_segment>& blue,
-                              const double delimita_max, const double delimita_min);
+      x_order_intersection_rb(const std::vector<gde::geom::core::line_segment>& red_segments,
+                              const std::vector<gde::geom::core::line_segment>& blue_segments);
 
       /*!
         \brief Given a set of segments compute the intersection points between each pair.
@@ -189,9 +178,9 @@ namespace gde
 
         \note ????.
        */
-      std::vector<gde::geom::core::point>
-      tiling_intersection(const std::vector<gde::geom::core::line_segment>& segments,
-                          const double& max_length, const double& max_range, const double& min_range);
+//      std::vector<gde::geom::core::point>
+//      tiling_intersection(const std::vector<gde::geom::core::line_segment>& segments,
+//                          const double& max_length, const double& max_range, const double& min_range);
 
       /*!
         \brief Given a set of segments red and blue compute the intersection points between each pair.
@@ -203,11 +192,11 @@ namespace gde
         \note ????.
        */
 
-      std::vector<gde::geom::core::point>
-      tiling_intersection_rb(const std::vector<gde::geom::core::line_segment>& red,
-                             const std::vector<gde::geom::core::line_segment>& blue,
-                             const double& max_length_r, const double& max_range_r, const double& min_range_r,
-                             const double& max_length_b, const double& max_range_b, const double& min_range_b);
+//      std::vector<gde::geom::core::point>
+//      tiling_intersection_rb(const std::vector<gde::geom::core::line_segment>& red,
+//                             const std::vector<gde::geom::core::line_segment>& blue,
+//                             const double& max_length_r, const double& max_range_r, const double& min_range_r,
+//                             const double& max_length_b, const double& max_range_b, const double& min_range_b);
 
       /*!
         \brief Given a set of segments compute the intersection points between each pair with thread.
@@ -219,9 +208,9 @@ namespace gde
         \note ????.
        */
 
-      std::size_t
-      tiling_intersection_thread(const std::vector<gde::geom::core::line_segment>& segments,
-                                 const double& max_length, const double& max_range, const double& min_range);
+//      std::size_t
+//      tiling_intersection_thread(const std::vector<gde::geom::core::line_segment>& segments,
+//                                 const double& max_length, const double& max_range, const double& min_range);
 
 
     } // end namespace algorithm
