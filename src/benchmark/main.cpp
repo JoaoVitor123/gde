@@ -581,6 +581,32 @@ test_x_order_intersection_rb(const std::vector<gde::geom::core::line_segment>& r
 }
 
 void
+test_x_order_intersection_rb2(const std::vector<gde::geom::core::line_segment>& red_segments,
+                             const std::vector<gde::geom::core::line_segment>& blue_segments)
+{
+  benchmark_t b;
+  
+  std::cout << "test_x_order_intersection_rb2..." << std::endl;
+  
+  b.start = std::chrono::system_clock::now();
+  
+  std::vector<gde::geom::core::point> ipts = gde::geom::algorithm::x_order_intersection_rb(red_segments, blue_segments);
+  
+  b.end = std::chrono::system_clock::now();
+  
+  b.elapsed_time = b.end - b.start;
+  
+  b.algorithm_name = "x_order_intersection_rb2";
+  b.num_intersections = ipts.size();
+  b.num_segments = red_segments.size() + blue_segments.size();
+  b.repetitions = 1;
+  
+  print(b);
+  
+  save_intersection_points(ipts, 0, 4674, "/Users/gribeiro/Desktop/Curso-TerraView/test_x_order_intersection_rb2.shp");
+}
+
+void
 test_x_order_intersection_rb_thread(const std::vector<gde::geom::core::line_segment>& red_segments,
                                     const std::vector<gde::geom::core::line_segment>& blue_segments)
 {
@@ -601,6 +627,7 @@ test_x_order_intersection_rb_thread(const std::vector<gde::geom::core::line_segm
   b.end = std::chrono::system_clock::now();
   
   b.elapsed_time = b.end - b.start;
+  //std::chrono::duration_cast<std::chrono::seconds>(end - start)
   
   b.algorithm_name = "x_order_intersection_rb_thread";
   b.num_segments = red_segments.size() + blue_segments.size();
@@ -630,7 +657,9 @@ int main(int argc, char* argv[])
   
   test_x_order_intersection_rb(trechos_drenagem, trechos_rodoviario);
   
-  test_x_order_intersection_rb_thread(trechos_drenagem, trechos_rodoviario);
+  test_x_order_intersection_rb2(trechos_drenagem, trechos_rodoviario);
+  
+  //test_x_order_intersection_rb_thread(trechos_drenagem, trechos_rodoviario);
   
   //test_lazy_intersection_rb_thread(trechos_drenagem, trechos_rodoviario);
                                                     

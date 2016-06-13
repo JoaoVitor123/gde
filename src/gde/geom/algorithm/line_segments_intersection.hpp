@@ -143,6 +143,10 @@ namespace gde
       std::vector<gde::geom::core::point>
       x_order_intersection_rb(const std::vector<gde::geom::core::line_segment>& red_segments,
                               const std::vector<gde::geom::core::line_segment>& blue_segments);
+      
+      std::vector<gde::geom::core::point>
+      x_order_intersection_rb2(const std::vector<gde::geom::core::line_segment>& red_segments,
+                               const std::vector<gde::geom::core::line_segment>& blue_segments);
 
       /*!
         \brief Given a set of segments compute the intersection points between each pair.
@@ -189,6 +193,13 @@ namespace gde
                                      const std::vector<gde::geom::core::line_segment>& blue_segments,
                                      std::size_t nthreads,
                                      std::vector<std::vector<gde::geom::core::point> >& intersection_pts);
+      
+      
+      std::vector<gde::geom::core::point>
+      fixed_grid_intersection_rb(const std::vector<gde::geom::core::line_segment>& red_segments,
+                                 const std::vector<gde::geom::core::line_segment>& blue_segments,
+                                 double dx, double dy, double xmin, double xmax,
+                                 double ymin, double ymax);
 
 
       /*!
