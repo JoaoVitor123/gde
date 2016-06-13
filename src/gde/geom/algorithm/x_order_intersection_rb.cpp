@@ -19,7 +19,7 @@
 */
 
 /*!
-  \file gde/geom/algorithm/tiling_intersection_rb.cpp
+  \file gde/geom/algorithm/x_order_intersection_rb.cpp
 
   \brief tiling intersection algorithm.
 

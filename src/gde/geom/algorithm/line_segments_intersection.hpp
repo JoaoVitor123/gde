@@ -147,27 +147,49 @@ namespace gde
       /*!
         \brief Given a set of segments compute the intersection points between each pair.
 
-        This algorithm sorts all input segments by x-coordinate and then
-        utilizes a brute force algorithm to compute intersection points
-        between segments that overlap.
-
-        \note This algorithm has a worst-case performance of O(n^2), but in practice it is very competitive.
-       */
-       std::size_t
-       x_order_intersection_thread(const std::vector<gde::geom::core::line_segment>& segments);
-
-      /*!
-        \brief Given two poly-lines, named red and blue, compute the intersection points between their segments.
-
         This algorithm sorts all input segments by x-coordinate and then 
         utilizes a brute force algorithm to compute intersection points
-        between segments that overlap.
+        between segments that overlap. Therefore
+        it will apply a given number of threads to compute the intersections.
+        
+        This algorithm works like a plane-sweep, but it sweeps along
+        only one direction.
+        
+        The worst-case performance is O(n^2), where n is the number of
+        input segments. Therefore, the expected running time will depend
+        on the number of segments in the vertical bands defined by
+        the x-ordering of the segments. It will be O(n * E(n)), where E(n)
+        is the average number of segments in each vertical band.
 
         \note This algorithm has a worst-case performance of O(n^2), but in practice it is very competitive.
        */
-      //std::vector<gde::geom::core::point>
-      //x_order_intersection(gde::geom::core::line_string& red_line,
-      //                     gde::geom::core::line_segment& blue_line);
+      void
+      x_order_intersection_thread(const std::vector<gde::geom::core::line_segment>& segments,
+                                  std::size_t nthreads,
+                                  std::vector<std::vector<gde::geom::core::point> >& intersetion_pts);
+      
+      /*!
+        \brief Given two set of segments, called red and blue sets, compute the intersection points
+               between red and blue segments.
+
+        This algorithm works like a plane-sweep, but it sweeps along
+        only one direction.
+        
+        The worst-case performance is O(n*m), where n is the number of segments
+        in the red set and m is the number of segments in the blue set.
+        Therefore, the expected running time will depend
+        on the number of blue segments in the vertical bands defined by
+        each red segment. It will be O(n * E(m)), where E(m)
+        is the average number of segments in each vertical band.
+
+        \note This algorithm has a worst-case performance of O(n*m), but in practice it is very competitive.
+       */
+      void
+      x_order_intersection_rb_thread(const std::vector<gde::geom::core::line_segment>& red_segments,
+                                     const std::vector<gde::geom::core::line_segment>& blue_segments,
+                                     std::size_t nthreads,
+                                     std::vector<std::vector<gde::geom::core::point> >& intersection_pts);
+
 
       /*!
         \brief Given a set of segments compute the intersection points between each pair.

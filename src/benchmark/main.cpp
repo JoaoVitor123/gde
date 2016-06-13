@@ -47,14 +47,24 @@
 #include <string>
 #include <thread>
 
-//struct benchmark_t
-//{
-//  std::string algorithm_name;                   // algorithm name
-//  std::size_t num_segments;                     // number of segments
-//  std::size_t num_intersections;                // number of intersections
-//  std::chrono::duration<double> elapsed_time;  // miliseconds
-//};
-//
+struct benchmark_t
+{
+  std::string algorithm_name;                   // algorithm name
+  std::size_t num_segments;                     // number of segments
+  std::size_t num_intersections;                // number of intersections
+  std::chrono::time_point<std::chrono::system_clock> start;
+  std::chrono::time_point<std::chrono::system_clock> end;
+  std::chrono::duration<double> elapsed_time;  // miliseconds
+  std::size_t repetitions;
+};
+
+void print(const benchmark_t& result)
+{
+  std::cout << std::setprecision(18)
+            << result.algorithm_name << ";" << result.num_segments << ";"
+            << result.num_intersections << ";" << (result.elapsed_time.count() / static_cast<double>(result.repetitions)) << std::endl;
+}
+
 //void print(const std::vector<benchmark_t>& results)
 //{
 //  for(const benchmark_t& result : results)
@@ -516,7 +526,19 @@ test_lazy_intersection_rb_thread(const std::vector<gde::geom::core::line_segment
 
   std::vector<std::vector<gde::geom::core::point> > intersetion_pts;
   
+  benchmark_t b;
+  
+  b.start = std::chrono::system_clock::now();
+  
   gde::geom::algorithm::lazy_intersection_rb_thread(red_segments, blue_segments, num_threads, intersetion_pts);
+  
+  b.end = std::chrono::system_clock::now();
+  
+  b.elapsed_time = b.end - b.start;
+  
+  b.algorithm_name = "lazy_intersection_rb_thread";
+  b.num_segments = red_segments.size() + blue_segments.size();
+  b.repetitions = 1;
   
   std::vector<gde::geom::core::point> ipts;
   
@@ -525,6 +547,10 @@ test_lazy_intersection_rb_thread(const std::vector<gde::geom::core::line_segment
     std::copy(vecipts.begin(), vecipts.end(), std::back_inserter(ipts));
   }
   
+  b.num_intersections = ipts.size();
+  
+  print(b);
+  
   save_intersection_points(ipts, 0, 4674, "/Users/gribeiro/Desktop/Curso-TerraView/test_lazy_intersection_rb_thread.shp");
 }
 
@@ -532,9 +558,66 @@ void
 test_x_order_intersection_rb(const std::vector<gde::geom::core::line_segment>& red_segments,
                              const std::vector<gde::geom::core::line_segment>& blue_segments)
 {
+  benchmark_t b;
+  
+  std::cout << "test_x_order_intersection_rb..." << std::endl;
+  
+  b.start = std::chrono::system_clock::now();
+  
   std::vector<gde::geom::core::point> ipts = gde::geom::algorithm::x_order_intersection_rb(red_segments, blue_segments);
+  
+  b.end = std::chrono::system_clock::now();
+  
+  b.elapsed_time = b.end - b.start;
+  
+  b.algorithm_name = "x_order_intersection_rb";
+  b.num_intersections = ipts.size();
+  b.num_segments = red_segments.size() + blue_segments.size();
+  b.repetitions = 1;
+  
+  print(b);
 
   save_intersection_points(ipts, 0, 4674, "/Users/gribeiro/Desktop/Curso-TerraView/test_x_order_intersection_rb.shp");
+}
+
+void
+test_x_order_intersection_rb_thread(const std::vector<gde::geom::core::line_segment>& red_segments,
+                                    const std::vector<gde::geom::core::line_segment>& blue_segments)
+{
+  std::size_t num_threads = std::thread::hardware_concurrency();
+  
+  std::cout << num_threads << std::endl;
+
+  std::vector<std::vector<gde::geom::core::point> > intersection_pts;
+  
+  benchmark_t b;
+  
+  std::cout << "test_x_order_intersection_rb..." << std::endl;
+  
+  b.start = std::chrono::system_clock::now();
+  
+  gde::geom::algorithm::x_order_intersection_rb_thread(red_segments, blue_segments, num_threads, intersection_pts);
+  
+  b.end = std::chrono::system_clock::now();
+  
+  b.elapsed_time = b.end - b.start;
+  
+  b.algorithm_name = "x_order_intersection_rb_thread";
+  b.num_segments = red_segments.size() + blue_segments.size();
+  b.repetitions = 1;
+  
+  std::vector<gde::geom::core::point> ipts;
+  
+  for(const auto& vecipts : intersection_pts)
+  {
+    std::copy(vecipts.begin(), vecipts.end(), std::back_inserter(ipts));
+  }
+  
+  b.num_intersections = ipts.size();
+  
+  print(b);
+
+  save_intersection_points(ipts, 0, 4674, "/Users/gribeiro/Desktop/Curso-TerraView/test_x_order_intersection_rb_thread.shp");
 }
 
 int main(int argc, char* argv[])
@@ -546,6 +629,10 @@ int main(int argc, char* argv[])
   std::vector<gde::geom::core::line_segment> trechos_rodoviario = extract_segments_from_shp("/Users/gribeiro/Desktop/Curso-TerraView/trechos_rodovarios/TRA_Trecho_Rodoviario_L.shp");
   
   test_x_order_intersection_rb(trechos_drenagem, trechos_rodoviario);
+  
+  test_x_order_intersection_rb_thread(trechos_drenagem, trechos_rodoviario);
+  
+  //test_lazy_intersection_rb_thread(trechos_drenagem, trechos_rodoviario);
                                                     
   StopTerraLib();
 
