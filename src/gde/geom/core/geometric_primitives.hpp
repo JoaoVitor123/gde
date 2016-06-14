@@ -30,6 +30,9 @@
 #ifndef __GDE_GEOM_CORE_GEOMETRIC_PRMITIVES_HPP__
 #define __GDE_GEOM_CORE_GEOMETRIC_PRMITIVES_HPP__
 
+// STL
+#include <limits>
+
 namespace gde
 {
   namespace geom
@@ -74,6 +77,31 @@ namespace gde
       {
         return (lhs.x == rhs.x) && (lhs.y == rhs.y);
       }
+      
+      /*!
+       \struct rectangle
+       
+       \brief Representation for rectangles.
+       */
+      struct rectangle
+      {
+        point ll;
+        point ur;
+        
+        rectangle()
+        {
+          ll.x = std::numeric_limits<double>::infinity();
+          ll.y = std::numeric_limits<double>::infinity();
+          
+          ur.x = - std::numeric_limits<double>::infinity();
+          ur.y = - std::numeric_limits<double>::infinity();
+        }
+        
+        rectangle(const point& lower_left, const point& upper_right)
+        : ll(lower_left), ur(upper_right)
+        { }
+      };
+
       
       /*!
         \enum color_type

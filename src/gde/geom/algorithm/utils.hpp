@@ -35,7 +35,9 @@
 
 // STL
 #include <algorithm>
+#include <cmath>
 #include <functional>
+#include <utility>
 
 namespace gde
 {
@@ -272,7 +274,64 @@ namespace gde
           
           return s;
         }
-      };      
+      };
+      
+      template<class ForwardIt> inline
+      gde::geom::core::rectangle
+      compute_rectangle(ForwardIt first, ForwardIt last)
+      {
+        gde::geom::core::rectangle r;
+        
+        while(first != last)
+        {
+          std::pair<double, double> min_max_x = std::minmax(first->p1.x, first->p2.x);
+          
+          std::pair<double, double> min_max_y = std::minmax(first->p1.y, first->p2.y);
+          
+          if(min_max_x.first < r.ll.x)
+            r.ll.x = min_max_x.first;
+          
+          if(min_max_x.second > r.ur.x)
+            r.ur.x = min_max_x.second;
+          
+          if(min_max_y.first < r.ll.y)
+            r.ll.y = min_max_y.first;
+          
+          if(min_max_y.second > r.ur.y)
+            r.ur.y = min_max_y.second;
+          
+          ++first;
+        }
+        
+        return r;
+      }
+      
+      template<class ForwardIt> inline
+      std::pair<double, double>
+      compute_average_length(ForwardIt first, ForwardIt last)
+      {
+        std::pair<double, double> avg(0.0, 0.0);
+        
+        std::size_t s = 0;
+        
+        while(first != last)
+        {
+          avg.first += std::abs(first->p1.x - first->p2.x);
+          avg.second += std::abs(first->p1.y - first->p2.y);
+          
+          ++s;
+          ++first;
+        }
+        
+        if(s > 0)
+        {
+          avg.first /= static_cast<double>(s);
+          avg.second /= static_cast<double>(s);
+        }
+        
+        return avg;
+      }
+      
     } // end namespace algorithm
   }   // end namespace geom
 }     // end namespace gde

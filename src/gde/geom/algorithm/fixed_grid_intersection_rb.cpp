@@ -66,11 +66,11 @@ gde::geom::algorithm::fixed_grid_intersection_rb(const std::vector<gde::geom::co
     std::pair<std::size_t, std::size_t> min_max_col = std::minmax(first_col, second_col);
     std::pair<std::size_t, std::size_t> min_max_row = std::minmax(first_row, second_row);
 
-    for(std::size_t col = min_max_col.first; col != min_max_col.second; ++col)
+    for(std::size_t col = min_max_col.first; col <= min_max_col.second; ++col)
     {
       std::size_t offset = col * nrows;
 
-      for(std::size_t row = min_max_row.first; row != min_max_row.second; ++row)
+      for(std::size_t row = min_max_row.first; row <= min_max_row.second; ++row)
       {
         std::size_t k = row + offset;
 
@@ -78,6 +78,9 @@ gde::geom::algorithm::fixed_grid_intersection_rb(const std::vector<gde::geom::co
       }
     }
   }
+  
+  gde::geom::core::point ip1;
+  gde::geom::core::point ip2;
 
   for(std::size_t i = 0; i < nred_segments; ++i)
   {
@@ -92,11 +95,11 @@ gde::geom::algorithm::fixed_grid_intersection_rb(const std::vector<gde::geom::co
     std::pair<std::size_t, std::size_t> min_max_col = std::minmax(first_col, second_col);
     std::pair<std::size_t, std::size_t> min_max_row = std::minmax(first_row, second_row);
 
-    for(std::size_t col = min_max_col.first; col != min_max_col.second; ++col)
+    for(std::size_t col = min_max_col.first; col <= min_max_col.second; ++col)
     {
       std::size_t offset = col * nrows;
 
-      for(std::size_t row = min_max_row.first; row != min_max_row.second; ++row)
+      for(std::size_t row = min_max_row.first; row <= min_max_row.second; ++row)
       {
         std::size_t k = row + offset;
 
@@ -108,7 +111,24 @@ gde::geom::algorithm::fixed_grid_intersection_rb(const std::vector<gde::geom::co
           
           const auto& blue = blue_segments[blue_idx];
           
-          // testar p/ ver se tem intersecao e se ela ocorre nesse ponto da grade!
+          if(do_bounding_box_intersects(red, blue))
+          {
+            segment_relation_type spatial_relation = compute_intesection_v3(red, blue, ip1, ip2);
+          
+            if(spatial_relation != DISJOINT)
+            {
+              //TODO: verificar se o pt está dentro da grade!
+              ipts.push_back(ip1);
+              
+              if(spatial_relation == OVERLAP)
+              {
+                //TODO: verificar se o pt está dentro da grade!
+                ipts.push_back(ip2);
+              }
+            }
+          }
+
+          ++it;
         }
       }
     }

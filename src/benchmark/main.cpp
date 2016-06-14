@@ -647,6 +647,36 @@ test_x_order_intersection_rb_thread(const std::vector<gde::geom::core::line_segm
   save_intersection_points(ipts, 0, 4674, "/Users/gribeiro/Desktop/Curso-TerraView/test_x_order_intersection_rb_thread.shp");
 }
 
+void
+test_fixed_grid_intersection_rb(const std::vector<gde::geom::core::line_segment>& red_segments,
+                                const std::vector<gde::geom::core::line_segment>& blue_segments)
+{
+  benchmark_t b;
+  
+  std::cout << "test_fixed_grid_intersection_rb..." << std::endl;
+  
+  gde::geom::core::rectangle r = gde::geom::algorithm::compute_rectangle(blue_segments.begin(), blue_segments.end());
+  
+  std::pair<double, double> res_x_y = gde::geom::algorithm::compute_average_length(blue_segments.begin(), blue_segments.end());
+  
+  b.start = std::chrono::system_clock::now();
+  
+  std::vector<gde::geom::core::point> ipts = gde::geom::algorithm::fixed_grid_intersection_rb(red_segments, blue_segments, res_x_y.first * 4.0, res_x_y.second * 4.0, r.ll.x, r.ur.x, r.ll.y, r.ur.y);
+  
+  b.end = std::chrono::system_clock::now();
+  
+  b.elapsed_time = b.end - b.start;
+  
+  b.algorithm_name = "fixed_grid_intersection_rb";
+  b.num_intersections = ipts.size();
+  b.num_segments = red_segments.size() + blue_segments.size();
+  b.repetitions = 1;
+  
+  print(b);
+  
+  save_intersection_points(ipts, 0, 4674, "/Users/gribeiro/Desktop/Curso-TerraView/test_fixed_grid_intersection_rb.shp");
+}
+
 int main(int argc, char* argv[])
 {
   StartTerraLib();
@@ -655,13 +685,15 @@ int main(int argc, char* argv[])
   
   std::vector<gde::geom::core::line_segment> trechos_rodoviario = extract_segments_from_shp("/Users/gribeiro/Desktop/Curso-TerraView/trechos_rodovarios/TRA_Trecho_Rodoviario_L.shp");
   
-  test_x_order_intersection_rb(trechos_drenagem, trechos_rodoviario);
+  //test_x_order_intersection_rb(trechos_drenagem, trechos_rodoviario);
   
-  test_x_order_intersection_rb2(trechos_drenagem, trechos_rodoviario);
+  //test_x_order_intersection_rb2(trechos_drenagem, trechos_rodoviario);
   
   //test_x_order_intersection_rb_thread(trechos_drenagem, trechos_rodoviario);
   
   //test_lazy_intersection_rb_thread(trechos_drenagem, trechos_rodoviario);
+  
+  test_fixed_grid_intersection_rb(trechos_drenagem, trechos_rodoviario);
                                                     
   StopTerraLib();
 
