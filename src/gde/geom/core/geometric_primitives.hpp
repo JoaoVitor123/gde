@@ -97,6 +97,15 @@ namespace gde
           ur.y = - std::numeric_limits<double>::infinity();
         }
         
+        rectangle(double llx, double lly, double urx, double ury)
+        {
+          ll.x = llx;
+          ll.y = lly;
+          
+          ur.x = urx;
+          ur.y = ury;
+        }
+        
         rectangle(const point& lower_left, const point& upper_right)
         : ll(lower_left), ur(upper_right)
         { }

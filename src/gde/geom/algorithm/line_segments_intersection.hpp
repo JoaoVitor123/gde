@@ -225,11 +225,10 @@ namespace gde
         \note ????.
        */
 
-//      std::vector<gde::geom::core::point>
-//      tiling_intersection_rb(const std::vector<gde::geom::core::line_segment>& red,
-//                             const std::vector<gde::geom::core::line_segment>& blue,
-//                             const double& max_length_r, const double& max_range_r, const double& min_range_r,
-//                             const double& max_length_b, const double& max_range_b, const double& min_range_b);
+      std::vector<gde::geom::core::point>
+      tiling_intersection_rb(const std::vector<gde::geom::core::line_segment>& red_segments,
+                             const std::vector<gde::geom::core::line_segment>& blue_segments,
+                             double dy, double ymin, double ymax);
 
       /*!
         \brief Given a set of segments compute the intersection points between each pair with thread.

@@ -677,6 +677,45 @@ test_fixed_grid_intersection_rb(const std::vector<gde::geom::core::line_segment>
   save_intersection_points(ipts, 0, 4674, "/Users/gribeiro/Desktop/Curso-TerraView/test_fixed_grid_intersection_rb.shp");
 }
 
+void
+test_tiling_intersection_rb(const std::vector<gde::geom::core::line_segment>& red_segments,
+                            const std::vector<gde::geom::core::line_segment>& blue_segments)
+{
+  benchmark_t b;
+  
+  std::cout << "test_fixed_grid_intersection_rb..." << std::endl;
+  
+  gde::geom::core::rectangle rec_red = gde::geom::algorithm::compute_rectangle(red_segments.begin(), red_segments.end());
+  gde::geom::core::rectangle rec_blue = gde::geom::algorithm::compute_rectangle(blue_segments.begin(), blue_segments.end());
+  
+  gde::geom::core::rectangle r(std::min(rec_red.ll.x, rec_blue.ll.x),
+                               std::min(rec_red.ll.y, rec_blue.ll.y),
+                               std::max(rec_red.ur.x, rec_blue.ur.x),
+                               std::max(rec_red.ur.y, rec_blue.ur.y));
+  
+  std::pair<double, double> res_x_y_red = gde::geom::algorithm::compute_average_length(red_segments.begin(), red_segments.end());
+  std::pair<double, double> res_x_y_blue = gde::geom::algorithm::compute_average_length(blue_segments.begin(), blue_segments.end());
+
+  double res_y = (res_x_y_red.second * static_cast<double>(red_segments.size()) + res_x_y_blue.second * static_cast<double>(blue_segments.size())) / static_cast<double>(red_segments.size() + blue_segments.size());
+  
+  b.start = std::chrono::system_clock::now();
+  
+  std::vector<gde::geom::core::point> ipts = gde::geom::algorithm::tiling_intersection_rb(red_segments, blue_segments, res_y * 4.0, r.ll.y, r.ur.y);
+  
+  b.end = std::chrono::system_clock::now();
+  
+  b.elapsed_time = b.end - b.start;
+  
+  b.algorithm_name = "tiling_intersection_rb";
+  b.num_intersections = ipts.size();
+  b.num_segments = red_segments.size() + blue_segments.size();
+  b.repetitions = 1;
+  
+  print(b);
+  
+  save_intersection_points(ipts, 0, 4674, "/Users/gribeiro/Desktop/Curso-TerraView/test_tiling_intersection_rb.shp");
+}
+
 int main(int argc, char* argv[])
 {
   StartTerraLib();
@@ -693,7 +732,9 @@ int main(int argc, char* argv[])
   
   //test_lazy_intersection_rb_thread(trechos_drenagem, trechos_rodoviario);
   
-  test_fixed_grid_intersection_rb(trechos_drenagem, trechos_rodoviario);
+  //test_fixed_grid_intersection_rb(trechos_drenagem, trechos_rodoviario);
+  
+  test_tiling_intersection_rb(trechos_drenagem, trechos_rodoviario);
                                                     
   StopTerraLib();
 

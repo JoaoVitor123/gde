@@ -332,6 +332,30 @@ namespace gde
         return avg;
       }
       
+      inline bool
+      is_in_cell(double xmin, double ymin,
+                 double dx, double dy,
+                 std::size_t col, std::size_t row,
+                 double x, double y)
+      {
+        std::size_t c = (x - xmin) / dx;
+        
+        if(c != col)
+          return false;
+        
+        std::size_t r = (y - ymin) / dy;
+        
+        return (r == row);
+      }
+      
+      inline bool
+      is_in_tile(double ymin, double dy, std::size_t row, double y)
+      {
+        std::size_t r = (y - ymin) / dy;
+        
+        return (r == row);
+      }
+      
     } // end namespace algorithm
   }   // end namespace geom
 }     // end namespace gde
