@@ -37,6 +37,23 @@
 #include <cmath>
 #include <map>
 
+inline bool
+is_on_cell(double xmin, double ymin, double dx, double dy,
+           std::size_t col, std::size_t row, double x, double y)
+{
+  std::size_t pt_col = (x - xmin) / dx;
+  
+  if(pt_col != col)
+    return false;
+  
+  std::size_t pt_row = (y - ymin) / dy;
+  
+  if(pt_row != row)
+    return false;
+  
+  return true;
+}
+
 std::vector<gde::geom::core::point>
 gde::geom::algorithm::fixed_grid_intersection_rb(const std::vector<gde::geom::core::line_segment>& red_segments,
                                                  const std::vector<gde::geom::core::line_segment>& blue_segments,
@@ -103,11 +120,11 @@ gde::geom::algorithm::fixed_grid_intersection_rb(const std::vector<gde::geom::co
       {
         std::size_t k = row + offset;
 
-        auto it = blue_grid.find(k);
+        auto range = blue_grid.equal_range(k);
 
-        while(it != blue_grid.end())
+        while(range.first != range.second)
         {
-          std::size_t blue_idx = it->second;
+          std::size_t blue_idx = range.first->second;
           
           const auto& blue = blue_segments[blue_idx];
           
@@ -117,18 +134,18 @@ gde::geom::algorithm::fixed_grid_intersection_rb(const std::vector<gde::geom::co
           
             if(spatial_relation != DISJOINT)
             {
-              //TODO: verificar se o pt está dentro da grade!
-              ipts.push_back(ip1);
+              if(is_on_cell(xmin, ymin, dx, dy, col, row, ip1.x, ip1.y))
+                ipts.push_back(ip1);
               
               if(spatial_relation == OVERLAP)
               {
-                //TODO: verificar se o pt está dentro da grade!
-                ipts.push_back(ip2);
+                if(is_on_cell(xmin, ymin, dx, dy, col, row, ip2.x, ip2.y))
+                  ipts.push_back(ip2);
               }
             }
           }
 
-          ++it;
+          ++(range.first);
         }
       }
     }
