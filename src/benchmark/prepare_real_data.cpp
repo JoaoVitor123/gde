@@ -111,16 +111,38 @@ void Convert2Segments(const te::gm::Geometry& geom,
     case te::gm::MultiLineStringZType:
     case te::gm::MultiLineStringMType:
     case te::gm::MultiLineStringZMType:
+    case te::gm::MultiPolygonType:
+    case te::gm::MultiPolygonZType:
+    case te::gm::MultiPolygonMType:
+    case te::gm::MultiPolygonZMType:
       {
-        const te::gm::MultiLineString& mline = dynamic_cast<const te::gm::MultiLineString&>(geom);
+        const te::gm::GeometryCollection& gc = dynamic_cast<const te::gm::GeometryCollection&>(geom);
     
-        std::size_t nlines = mline.getNumGeometries();
+        std::size_t ngeoms = gc.getNumGeometries();
     
-        for(std::size_t i = 0; i != nlines; ++i)
+        for(std::size_t i = 0; i != ngeoms; ++i)
         {
-          const te::gm::Geometry* geom_part = mline.getGeometryN(i);
+          const te::gm::Geometry* geom_part = gc.getGeometryN(i);
       
           Convert2Segments(*geom_part, result);
+        }
+      }
+      break;
+      
+    case te::gm::PolygonType:
+    case te::gm::PolygonZType:
+    case te::gm::PolygonMType:
+    case te::gm::PolygonZMType:
+      {
+        const te::gm::Polygon& pol = dynamic_cast<const te::gm::Polygon&>(geom);
+    
+        std::size_t nrings = pol.getNumRings();
+    
+        for(std::size_t i = 0; i != nrings; ++i)
+        {
+          const te::gm::Curve* c = pol.getRingN(i);
+      
+          Convert2Segments(*c, result);
         }
       }
       break;
