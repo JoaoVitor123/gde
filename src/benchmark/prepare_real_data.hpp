@@ -35,6 +35,7 @@
 
 // STL
 #include <vector>
+#include <string>
 
 void StartTerraLib();
 

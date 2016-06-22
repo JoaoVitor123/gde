@@ -201,6 +201,13 @@ namespace gde
                                  double dx, double dy, double xmin, double xmax,
                                  double ymin, double ymax);
 
+      void
+      fixed_grid_intersection_rb_thread(const std::vector<gde::geom::core::line_segment>& red_segments,
+                                        const std::vector<gde::geom::core::line_segment>& blue_segments,
+                                        std::size_t nthreads, double dx, double dy, double xmin,
+                                        double xmax,double ymin, double ymax,
+                                        std::vector<std::vector<gde::geom::core::point> >& intersetion_pts);
+
 
       /*!
         \brief Given a set of segments compute the intersection points between each pair.
@@ -229,6 +236,12 @@ namespace gde
       tiling_intersection_rb(const std::vector<gde::geom::core::line_segment>& red_segments,
                              const std::vector<gde::geom::core::line_segment>& blue_segments,
                              double dy, double ymin, double ymax);
+
+      void
+      tiling_intersection_rb_thread(const std::vector<gde::geom::core::line_segment>& red_segments,
+                                    const std::vector<gde::geom::core::line_segment>& blue_segments,
+                                    std::size_t nthreads,double dy, double ymin, double ymax,
+                                    std::vector<std::vector<gde::geom::core::point> >& intersetion_pts);
 
       /*!
         \brief Given a set of segments compute the intersection points between each pair with thread.
