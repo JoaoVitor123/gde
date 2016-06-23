@@ -115,7 +115,7 @@ test_lazy_intersection_rb_thread(const std::string& test_name,
   
   print(b);
   
-  save_intersection_points(ipts, 0, srid, output_shape_file);
+  //save_intersection_points(ipts, 0, srid, output_shape_file);
 }
 
 void
@@ -147,7 +147,7 @@ test_x_order_intersection_rb(const std::string& test_name,
   
   print(b);
 
-  save_intersection_points(ipts, 0, srid, output_shape_file);
+  //save_intersection_points(ipts, 0, srid, output_shape_file);
 }
 
 void
@@ -191,7 +191,7 @@ test_x_order_intersection_rb_thread(const std::string& test_name,
   
   print(b);
 
-  save_intersection_points(ipts, 0, srid, output_shape_file);
+  //save_intersection_points(ipts, 0, srid, output_shape_file);
 }
 
 void
@@ -227,8 +227,52 @@ test_fixed_grid_intersection_rb(const std::string& test_name,
   
   print(b);
   
-  save_intersection_points(ipts, 0, srid, output_shape_file);
+  //save_intersection_points(ipts, 0, srid, output_shape_file);
 }
+
+void
+test_fixed_grid_intersection_rb_thread(const std::vector<gde::geom::core::line_segment>& red_segments,
+                                       const std::vector<gde::geom::core::line_segment>& blue_segments)
+{
+  benchmark_t b;
+
+  std::size_t num_threads = std::thread::hardware_concurrency();
+
+  std::cout << "test_fixed_grid_intersection_rb_thread..." << std::endl;
+
+  gde::geom::core::rectangle r = gde::geom::algorithm::compute_rectangle(blue_segments.begin(), blue_segments.end());
+
+  std::pair<double, double> res_x_y = gde::geom::algorithm::compute_average_length(blue_segments.begin(), blue_segments.end());
+
+  std::vector<std::vector<gde::geom::core::point> > ipts;
+
+  b.start = std::chrono::system_clock::now();
+
+  gde::geom::algorithm::fixed_grid_intersection_rb_thread(red_segments, blue_segments, num_threads, res_x_y.first * 4.0, res_x_y.second * 4.0,
+                                                          r.ll.x, r.ur.x, r.ll.y, r.ur.y, ipts);
+
+  b.end = std::chrono::system_clock::now();
+
+  b.elapsed_time = b.end - b.start;
+
+  std::vector<gde::geom::core::point> ipt;
+
+  for(const auto& vecipts : ipts)
+  {
+    std::copy(vecipts.begin(), vecipts.end(), std::back_inserter(ipt));
+  }
+
+  b.algorithm_name = "fixed_grid_intersection_rb";
+  b.num_intersections = ipt.size();
+  b.red_segments = red_segments.size();
+  b.blue_segments = blue_segments.size();
+  b.repetitions = 1;
+
+  print(b);
+
+  //save_intersection_points(ipts, 0, 4674, "/Users/gribeiro/Desktop/Curso-TerraView/test_fixed_grid_intersection_rb.shp");
+}
+
 
 void
 test_tiling_intersection_rb(const std::string& test_name,
@@ -274,31 +318,93 @@ test_tiling_intersection_rb(const std::string& test_name,
   
   print(b);
   
-  save_intersection_points(ipts, 0, srid, output_shape_file);
+  //save_intersection_points(ipts, 0, srid, output_shape_file);
+}
+
+
+
+void
+test_tiling_intersection_rb_thread(const std::vector<gde::geom::core::line_segment>& red_segments,
+                                   const std::vector<gde::geom::core::line_segment>& blue_segments)
+{
+
+  std::size_t num_threads = std::thread::hardware_concurrency();
+
+  benchmark_t b;
+
+  std::cout << "test_tiling_intersection_rb_thread..." << std::endl;
+
+  gde::geom::core::rectangle rec_red = gde::geom::algorithm::compute_rectangle(red_segments.begin(), red_segments.end());
+  gde::geom::core::rectangle rec_blue = gde::geom::algorithm::compute_rectangle(blue_segments.begin(), blue_segments.end());
+
+  gde::geom::core::rectangle r(std::min(rec_red.ll.x, rec_blue.ll.x),
+                               std::min(rec_red.ll.y, rec_blue.ll.y),
+                               std::max(rec_red.ur.x, rec_blue.ur.x),
+                               std::max(rec_red.ur.y, rec_blue.ur.y));
+
+  std::pair<double, double> res_x_y_red = gde::geom::algorithm::compute_average_length(red_segments.begin(), red_segments.end());
+  std::pair<double, double> res_x_y_blue = gde::geom::algorithm::compute_average_length(blue_segments.begin(), blue_segments.end());
+
+  double res_y = (res_x_y_red.second * static_cast<double>(red_segments.size()) + res_x_y_blue.second * static_cast<double>(blue_segments.size())) / static_cast<double>(red_segments.size() + blue_segments.size());
+
+  std::vector<std::vector<gde::geom::core::point> > ipts;
+
+  b.start = std::chrono::system_clock::now();
+
+  gde::geom::algorithm::tiling_intersection_rb_thread(red_segments, blue_segments,num_threads, res_y * 4.0, r.ll.y, r.ur.y,ipts);
+
+  b.end = std::chrono::system_clock::now();
+
+  b.elapsed_time = b.end - b.start;
+
+  std::vector<gde::geom::core::point> ipt;
+
+  for(const auto& vecipts : ipts)
+  {
+    std::copy(vecipts.begin(), vecipts.end(), std::back_inserter(ipt));
+  }
+
+  b.algorithm_name = "tiling_intersection_rbthread";
+  b.num_intersections = ipt.size();
+  b.red_segments = red_segments.size();
+  b.blue_segments = blue_segments.size();
+  b.repetitions = 1;
+
+  print(b);
+
+  //save_intersection_points(ipts, 0, 4674, "/home/joao/Desktop/RTP/intersection_rb");
 }
 
 int main(int argc, char* argv[])
 {
   StartTerraLib();
   
-  if(false)
+  if(true)
   {
-    std::vector<gde::geom::core::line_segment> trechos_drenagem = extract_segments_from_shp("/Users/gribeiro/Desktop/Curso-TerraView/ba_drenagem/HID_Trecho_Drenagem_L.shp");
+    //std::vector<gde::geom::core::line_segment> trechos_drenagem = extract_segments_from_shp("/Users/gribeiro/Desktop/Curso-TerraView/ba_drenagem/HID_Trecho_Drenagem_L.shp");
   
-    std::vector<gde::geom::core::line_segment> trechos_rodoviario = extract_segments_from_shp("/Users/gribeiro/Desktop/Curso-TerraView/trechos_rodovarios/TRA_Trecho_Rodoviario_L.shp");
+    //std::vector<gde::geom::core::line_segment> trechos_rodoviario = extract_segments_from_shp("/Users/gribeiro/Desktop/Curso-TerraView/trechos_rodovarios/TRA_Trecho_Rodoviario_L.shp");
+
+    std::vector<gde::geom::core::line_segment> trechos_drenagem = extract_segments_from_shp("/home/joao/Desktop/ba_drenagem/ba_drenagem/HID_Trecho_Drenagem_L.shp");
+
+    std::vector<gde::geom::core::line_segment> trechos_rodoviario = extract_segments_from_shp("/home/joao/Desktop/trechos_rodovarios/trechos_rodovarios/TRA_Trecho_Rodoviario_L.shp");
     
-    test_lazy_intersection_rb_thread("lazy_intersection_rb_thread - drenagem x trechos rodoviarios", trechos_drenagem, trechos_rodoviario, "/Users/gribeiro/Desktop/Curso-TerraView/result_lazy_intersection_rb_thread.shp", 4674);
+    //test_lazy_intersection_rb_thread("lazy_intersection_rb_thread - drenagem x trechos rodoviarios", trechos_drenagem, trechos_rodoviario, "/Users/gribeiro/Desktop/Curso-TerraView/result_lazy_intersection_rb_thread.shp", 4674);
     
-    test_x_order_intersection_rb("x_order_intersection_rb - drenagem x trechos rodoviarios", trechos_drenagem, trechos_rodoviario, "/Users/gribeiro/Desktop/Curso-TerraView/result_x_order_intersection_rb.shp", 4674);
+ //   test_x_order_intersection_rb("x_order_intersection_rb - drenagem x trechos rodoviarios", trechos_drenagem, trechos_rodoviario, "/Users/gribeiro/Desktop/Curso-TerraView/result_x_order_intersection_rb.shp", 4674);
     
-    test_x_order_intersection_rb_thread("x_order_intersection_rb_thread - drenagem x trechos rodoviarios", trechos_drenagem, trechos_rodoviario, "/Users/gribeiro/Desktop/Curso-TerraView/result_x_order_intersection_rb_thread.shp", 4674);
+  //  test_x_order_intersection_rb_thread("x_order_intersection_rb_thread - drenagem x trechos rodoviarios", trechos_drenagem, trechos_rodoviario, "/Users/gribeiro/Desktop/Curso-TerraView/result_x_order_intersection_rb_thread.shp", 4674);
+
+    //test_fixed_grid_intersection_rb("fixed_grid_intersection_rb - drenagem x trechos rodoviarios", trechos_drenagem, trechos_rodoviario, "/Users/gribeiro/Desktop/Curso-TerraView/result_fixed_grid_intersection_rb.shp", 4674);
     
-    test_fixed_grid_intersection_rb("fixed_grid_intersection_rb - drenagem x trechos rodoviarios", trechos_drenagem, trechos_rodoviario, "/Users/gribeiro/Desktop/Curso-TerraView/result_fixed_grid_intersection_rb.shp", 4674);
-    
+    //test_fixed_grid_intersection_rb_thread(trechos_drenagem, trechos_rodoviario);
+
     test_tiling_intersection_rb("tiling_intersection_rb - drenagem x trechos rodoviarios", trechos_drenagem, trechos_rodoviario, "/Users/gribeiro/Desktop/Curso-TerraView/result_tiling_intersection_rb.shp", 4674);
+
+    test_tiling_intersection_rb_thread(trechos_drenagem, trechos_rodoviario);
   }
   
-  if(true)
+  if(false)
   {
     std::vector<gde::geom::core::line_segment> municipios_go = extract_segments_from_shp("/Users/gribeiro/Desktop/Curso-TerraView/go_municipios/municipio.shp");
   

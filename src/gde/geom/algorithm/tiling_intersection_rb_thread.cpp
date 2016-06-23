@@ -73,6 +73,11 @@ struct intersection_computer5
 
   void operator()()
   {
+      double dy;
+      double ymin;
+
+      dy = this->dy;
+      ymin = this->ymin;
 
 // compute intersections using x-order for each tile!
     for(std::size_t i = thread_pos; i <= nrows; i += nthread)
@@ -81,10 +86,10 @@ struct intersection_computer5
       const std::vector<gde::geom::core::line_segment>& b_segs = (*blue_tile_idx)[i];
 
       std::vector<gde::geom::core::point> ips = gde::geom::algorithm::x_order_intersection_rb(r_segs , b_segs);
-      std::copy(ips.begin(), ips.end(), std::back_inserter((*ipts)));
-//    std::copy_if(ips.begin(), ips.end(), std::back_inserter(*ipts), [&i, &dy, &ymin]
-//                                                                   (const gde::geom::core::point& ip)
-//                                                                   { return is_in_tile(ymin, dy, i, ip.y); } );
+
+      std::copy_if(ips.begin(), ips.end(), std::back_inserter(*ipts), [&i, &dy, &ymin]
+                                                                   (const gde::geom::core::point& ip)
+                                                                   { return gde::geom::algorithm::is_in_tile(ymin, dy, i, ip.y); } );
 
     }
   }
